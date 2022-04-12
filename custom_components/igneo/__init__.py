@@ -8,6 +8,6 @@ def setup(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     hass.data.setdefault(DOMAIN, {})
 
-    hass.states.set(f"{DOMAIN}.world", "Paulus")
+    hass.states.set("igneo.world", "Paulus")
 
     return True
