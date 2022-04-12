@@ -1,0 +1,11 @@
+{
+  "codeowners": ["@Tabisch"],
+  "config_flow": false,
+  "dependencies": [],
+  "documentation": "https://github.com/Tabisch/igneo",
+  "domain": "igneo",
+  "iot_class": "cloud_polling",
+  "name": "Igneo",
+  "requirements": [],
+  "version": "0.0.1"
+}
