@@ -3,7 +3,7 @@ from datetime import timedelta
 from tokenize import String
 from typing import Any, Callable, Dict, Optional
 
-import EstymaApi
+from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
@@ -129,7 +129,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
-    sensors = [IgneoSensor(Api, repo) for repo in config[CONF_REPOS]]
+    sensors = [IgneoSensor(Api, device[CONF_DEVICE_ID], device[CONF_NAME]) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
 
 
@@ -149,7 +149,7 @@ class IgneoSensor(SensorEntity):
         return self._name
 
     @property
-    def device_id(self) -> str:
+    def unique_id(self) -> str:
         return self._Device_Id
 
     @property
