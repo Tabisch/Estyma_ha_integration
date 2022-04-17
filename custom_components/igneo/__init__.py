@@ -1,8 +1,8 @@
 import logging
 
-from homeassistant.core import HomeAssistant
+from homeassistant import config_entries, core
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
-from homeassistant.config_entries import ConfigEntry
+
 
 from .const import DOMAIN
 
@@ -17,15 +17,13 @@ async def async_setup(hass, config):
     hass.data.setdefault(DOMAIN, {})
     return True
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
-    """Set up Igneo from a config entry."""
-    _LOGGER.debug("Igneo async_setup_entry")
+async def async_setup_entry(hass: core.HomeAssistant, entry: config_entries.ConfigEntry) -> bool:
+    """Set up platform from a ConfigEntry."""
+    hass.data.setdefault(DOMAIN, {})
+    hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    hass.data[DOMAIN][entry.entry_id] = {}
-
-    for platform in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(entry, platform)
-        )
-
+    # Forward the setup to the sensor platform.
+    hass.async_create_task(
+        hass.config_entries.async_forward_entry_setup(entry, "sensor")
+    )
     return True

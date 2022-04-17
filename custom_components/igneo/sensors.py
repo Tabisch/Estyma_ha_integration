@@ -102,10 +102,17 @@ _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
 
-IGNEO_SCHEMA = vol.Schema(
+IGNEO_DEVICE_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_DEVICE_ID): cv.Number
+    }
+)
+
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
+        vol.Required(CONF_DEVICE_ID): vol.All(cv.ensure_list,[IGNEO_DEVICE_SCHEMA])
     }
 )
 
