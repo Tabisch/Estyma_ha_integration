@@ -6,6 +6,6 @@
   "domain": "igneo",
   "iot_class": "cloud_polling",
   "name": "Igneo",
-  "requirements": ["git+https://github.com/Tabisch/EstymaApi.git"],
+  "requirements": ["git+https://github.com/Tabisch/EstymaApi"],
   "version": "0.0.1"
 }

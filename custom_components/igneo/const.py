@@ -1,6 +1,5 @@
 DOMAIN = "igneo"
 
-
 ATTR_consumption_fuel_total_current_sub1 = "ATTR_consumption_fuel_total_current_sub1"
 ATTR_temp_boiler_return_sub1 = "ATTR_temp_boiler_return_sub1"
 ATTR_temp_heating_curcuit1_sub1 = "ATTR_temp_heating_curcuit1_sub1"
