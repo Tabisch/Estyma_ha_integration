@@ -112,7 +112,7 @@ CONF_DEVICES = "devices"
 
 IGNEO_DEVICE_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_DEVICE_ID): cv.Number,
+        vol.Required(CONF_DEVICE_ID): cv.string,
         vol.Optional(CONF_NAME): cv.string
     }
 )
