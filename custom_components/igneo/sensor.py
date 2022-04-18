@@ -1,6 +1,5 @@
 import logging
 from datetime import timedelta
-from msilib.schema import Error
 from tokenize import String
 from typing import Any, Callable, Dict, Optional
 import json
@@ -169,5 +168,5 @@ class IgneoSensor(SensorEntity):
             devicedata = json.loads(self.estymaapi.fetchDevicedata(self._Device_Id))
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata["ATTR_consumption_fuel_total_current_sub1"]
             #self.attrs[] =
-        except Error:
+        except Exception:
             _LOGGER.exception("Shit hit the fan")
