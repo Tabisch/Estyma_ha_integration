@@ -131,18 +131,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
-    sensors = [IgneoSensor(Api, device[CONF_DEVICE_ID], device[CONF_NAME]) for device in config[CONF_DEVICES]]
+    sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
 
 
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi, Device_Id, Name) -> None:
+    def __init__(self, estymaapi, device) -> None:
         super().__init__()
         self.estymaapi = estymaapi
-        self._name = Name
-        self._Device_Id = Device_Id
+        self._name = device["name"]
+        self._Device_Id = device["device_id"]
         self.attrs: Dict[str, Any] = {}
         self._available = True
 
