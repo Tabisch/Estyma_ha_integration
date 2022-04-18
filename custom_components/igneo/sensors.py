@@ -130,6 +130,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
+    _LOGGER.debug("igneo platform")
+
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
     sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
