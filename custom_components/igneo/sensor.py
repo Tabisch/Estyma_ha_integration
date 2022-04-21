@@ -62,7 +62,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
 
-    await Api.initialize()
+    Api.initialize()
     
     sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
@@ -94,8 +94,10 @@ class IgneoSensor(SensorEntity):
 
     async def async_update(self):
         try:
-            devicedata = json.loads(self.estymaapi.fetchDevicedata(self._Device_Id))
+            _LOGGER.critical("igneo sensor update started")
+            devicedata = json.loads(self.estymaapi.getDeviceData(self._Device_Id))
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata["ATTR_consumption_fuel_total_current_sub1"]
             #self.attrs[] =
+            _LOGGER.critical("igneo sensor update finshed")
         except Exception:
             _LOGGER.exception("Shit hit the fan")
