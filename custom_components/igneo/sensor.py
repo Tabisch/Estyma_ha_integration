@@ -76,7 +76,7 @@ class IgneoSensor(SensorEntity):
         self._Device_Id = f'{device["device_id"]}-'
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {ATTR_status_burner_current_sub1: None}
+        self.attrs: Dict[str, Any] = {ATTR_status_burner_current_sub1: "None"}
 
     @property
     def name(self) -> str:
