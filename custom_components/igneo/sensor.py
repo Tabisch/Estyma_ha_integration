@@ -69,7 +69,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi, device) -> None:
+    def __init__(self, estymaapi: EstymaApi, device) -> None:
         super().__init__()
         self.estymaapi = estymaapi
         self._name = device["name"]
@@ -93,6 +93,10 @@ class IgneoSensor(SensorEntity):
         return self._state
 
     async def async_update(self):
+        if(self.estymaapi.initialized == False):
+            _LOGGER.critical("igneo api not initialized")
+            return
+
         try:
             _LOGGER.critical("igneo sensor update started")
             devicedata = json.loads(self.estymaapi.getDeviceData(self._Device_Id))
