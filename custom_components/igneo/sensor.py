@@ -71,7 +71,7 @@ class IgneoSensor(SensorEntity):
 
     def __init__(self, estymaapi: EstymaApi, device) -> None:
         super().__init__()
-        self.estymaapi = estymaapi
+        self._estymaapi = estymaapi
         self._name = device["name"]
         self._Device_Id = f'{device["device_id"]}-'
         self._state = None
@@ -97,7 +97,7 @@ class IgneoSensor(SensorEntity):
     async def async_update(self):
         if(self.estymaapi.initialized == False):
             _LOGGER.critical("igneo api not initialized")
-            _LOGGER.critical(f'igneo api return code {self.estymaapi._returncode}')
+            _LOGGER.critical(f'igneo api return code {self._estymaapi._returncode}')
             return
 
         try:
