@@ -76,6 +76,7 @@ class IgneoSensor(SensorEntity):
         self._Device_Id = f'{device["device_id"]}-'
         self._state = None
         self._available = True
+        self.attrs: Dict[str, Any] = {ATTR_status_burner_current_sub1: None}
 
     @property
     def name(self) -> str:
@@ -101,7 +102,7 @@ class IgneoSensor(SensorEntity):
         try:
             _LOGGER.critical("igneo sensor update started")
             devicedata = json.loads(self.estymaapi.getDeviceData(self._Device_Id))
-            self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata["ATTR_consumption_fuel_total_current_sub1"]
+            self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f"{ATTR_consumption_fuel_total_current_sub1}"]
             #self.attrs[] =
             _LOGGER.critical("igneo sensor update finshed")
         except Exception:
