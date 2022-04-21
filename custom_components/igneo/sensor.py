@@ -97,7 +97,7 @@ class IgneoSensor(SensorEntity):
     async def async_update(self):
         if(self.estymaapi.initialized == False):
             _LOGGER.critical("igneo api not initialized")
-            _LOGGER.critical(f"igneo api return code {self.estymaapi._returncode}")
+            _LOGGER.critical(f'igneo api return code {self.estymaapi._returncode}')
             return
 
         try:
