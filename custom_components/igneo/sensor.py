@@ -73,7 +73,7 @@ class IgneoSensor(SensorEntity):
         super().__init__()
         self._estymaapi = estymaapi
         self._name = device["name"]
-        self._Device_Id = f'{device["device_id"]}-'
+        self._Device_Id = device["device_id"]
         self._state = None
         self._available = True
         self.attrs: Dict[str, Any] = {ATTR_status_burner_current_sub1: "None"}
