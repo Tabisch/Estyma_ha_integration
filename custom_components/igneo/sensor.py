@@ -102,7 +102,7 @@ class IgneoSensor(SensorEntity):
 
         try:
             _LOGGER.critical("igneo sensor update started")
-            devicedata = await json.loads(self._estymaapi.getDeviceData(self._Device_Id))
+            devicedata = json.loads(await self._estymaapi.getDeviceData(self._Device_Id))
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f"{ATTR_consumption_fuel_total_current_sub1}"]
             #self.attrs[] =
             _LOGGER.critical("igneo sensor update finshed")
