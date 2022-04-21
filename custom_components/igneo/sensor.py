@@ -74,7 +74,7 @@ class IgneoSensor(SensorEntity):
         self.estymaapi = estymaapi
         self._name = device["name"]
         self._Device_Id = f'{device["device_id"]}-'
-        self._state = True
+        self._state = "yes"
         self._available = True
 
     @property
