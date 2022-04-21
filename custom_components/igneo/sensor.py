@@ -95,7 +95,6 @@ class IgneoSensor(SensorEntity):
         return self._state
 
     async def async_update(self):
-        _LOGGER.critical(f'starting update for {self._Device_Id}')
         if(self._estymaapi.returncode == False):
             _LOGGER.critical("igneo api not initialized")
             _LOGGER.critical(f'igneo api return code {self._estymaapi._returncode}')
@@ -103,7 +102,7 @@ class IgneoSensor(SensorEntity):
 
         try:
             _LOGGER.critical("igneo sensor update started")
-            devicedata = json.loads(self._estymaapi.getDeviceData(self._Device_Id))
+            devicedata = await json.loads(self._estymaapi.getDeviceData(self._Device_Id))
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f"{ATTR_consumption_fuel_total_current_sub1}"]
             #self.attrs[] =
             _LOGGER.critical("igneo sensor update finshed")
