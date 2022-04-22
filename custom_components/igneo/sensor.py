@@ -90,7 +90,7 @@ class IgneoSensor(SensorEntity):
         return self._Device_Id
 
     @property
-    def device_state_attributes(self) -> Dict[str, Any]:
+    def extra_state_attributes(self) -> Dict[str, Any]:
         return self.attrs
 
     @property
@@ -104,11 +104,40 @@ class IgneoSensor(SensorEntity):
             return
 
         try:
-            _LOGGER.critical("igneo sensor update started")
+            _LOGGER.critical(f"updating {self._name} - {self._Device_Id}")
             devicedata = await self._estymaapi.getDeviceData(self._Device_Id)
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f'{ATTR_consumption_fuel_total_current_sub1}']
-            #self.attrs[] =
-            _LOGGER.critical("igneo sensor update finshed")
+            self.attrs[ATTR_temp_boiler_return_sub1] = devicedata[f'{ATTR_temp_boiler_return_sub1}']
+            self.attrs[ATTR_temp_heating_curcuit1_sub1] = devicedata[f'{ATTR_temp_heating_curcuit1_sub1}']
+            self.attrs[ATTR_temp_heating_curcuit2_sub1] = devicedata[f'{ATTR_temp_heating_curcuit2_sub1}']
+            self.attrs[ATTR_temp_heating_curcuit3_sub1] = devicedata[f'{ATTR_temp_heating_curcuit3_sub1}']
+            self.attrs[ATTR_temp_heating_curcuit4_sub1] = devicedata[f'{ATTR_temp_heating_curcuit4_sub1}']
+            self.attrs[ATTR_power_output_boiler_sub1] = devicedata[f'{ATTR_power_output_boiler_sub1}']
+            self.attrs[ATTR_lamda_pwm_sub1] = devicedata[f'{ATTR_lamda_pwm_sub1}']
+            self.attrs[ATTR_temp_lamda_sub1] = devicedata[f'{ATTR_temp_lamda_sub1}']
+            self.attrs[ATTR_temp_boiler_sub1] = devicedata[f'{ATTR_temp_boiler_sub1}']
+            self.attrs[ATTR_temp_boiler_obli_sub1] = devicedata[f'{ATTR_temp_boiler_obli_sub1}']
+            self.attrs[ATTR_temp_exhaust_boiler_sub1] = devicedata[f'{ATTR_temp_exhaust_boiler_sub1}']
+            self.attrs[ATTR_oxygen_content_exhaust_sub1] = devicedata[f'{ATTR_oxygen_content_exhaust_sub1}']
+            self.attrs[ATTR_status_burner_current_sub1] = devicedata[f'{ATTR_status_burner_current_sub1}']
+            self.attrs[ATTR_fuel_fill_level_sub1] = devicedata[f'{ATTR_fuel_fill_level_sub1}']
+            self.attrs[ATTR_temp_outside_sub1] = devicedata[f'{ATTR_temp_outside_sub1}']
+            self.attrs[ATTR_energy_meter_sub1] = devicedata[f'{ATTR_energy_meter_sub1}']
+            self.attrs[ATTR_status_boiler_pump_sub1] = devicedata[f'{ATTR_status_boiler_pump_sub1}']
+            self.attrs[ATTR_sensor_type_circuit1_sub1] = devicedata[f'{ATTR_sensor_type_circuit1_sub1}']
+            self.attrs[ATTR_target_temp_obw1_sub1] = devicedata[f'{ATTR_target_temp_obw1_sub1}']
+            self.attrs[ATTR_status_pump_heating_curcuit1_sub1] = devicedata[f'{ATTR_status_pump_heating_curcuit1_sub1}']
+            self.attrs[ATTR_temp_buffer_top_sub1] = devicedata[f'{ATTR_temp_buffer_top_sub1}']
+            self.attrs[ATTR_temp_buffer_bottom_sub1] = devicedata[f'{ATTR_temp_buffer_bottom_sub1}']
+            self.attrs[ATTR_device_type_sub1] = devicedata[f'{ATTR_device_type_sub1}']
+            self.attrs[ATTR_number_obw_heating_curcuit_sub1] = devicedata[f'{ATTR_number_obw_heating_curcuit_sub1}']
+            self.attrs[ATTR_number_obw_cwu_sub1] = devicedata[f'{ATTR_number_obw_cwu_sub1}']
+            self.attrs[ATTR_number_buffers_sub1] = devicedata[f'{ATTR_number_buffers_sub1}']
+            self.attrs[ATTR_status_solar_connected_sub1] = devicedata[f'{ATTR_status_solar_connected_sub1}']
+            self.attrs[ATTR_state_lamda_sub1] = devicedata[f'{ATTR_state_lamda_sub1}']
+            self.attrs[ATTR_temp_boiler_target_sub1] = devicedata[f'{ATTR_temp_boiler_target_sub1}']
+            self.attrs[ATTR_temp_boiler_target_sub3] = devicedata[f'{ATTR_temp_boiler_target_sub3}']
+            self.attrs[ATTR_temp_boiler_target_sub4] = devicedata[f'{ATTR_temp_boiler_target_sub4}']
         except:
             _LOGGER.exception("Shit hit the fan")
             _LOGGER.exception(traceback.print_exc())
