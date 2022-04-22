@@ -1,6 +1,7 @@
 import logging
 from datetime import timedelta
 from tokenize import String
+import traceback
 from typing import Any, Callable, Dict, Optional
 import json
 
@@ -108,5 +109,6 @@ class IgneoSensor(SensorEntity):
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f'{ATTR_consumption_fuel_total_current_sub1}']
             #self.attrs[] =
             _LOGGER.critical("igneo sensor update finshed")
-        except Exception:
+        except:
             _LOGGER.exception("Shit hit the fan")
+            _LOGGER.exception(traceback.print_exc())
