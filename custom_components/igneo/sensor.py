@@ -63,7 +63,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
 
-    Api.initialize()
+    await Api.initialize()
 
     _LOGGER.critical("igneo platform: after init")
     
@@ -100,7 +100,7 @@ class IgneoSensor(SensorEntity):
     async def async_update(self):
         if(self._estymaapi.initialized == False):
             _LOGGER.critical("igneo api not initialized")
-            _LOGGER.critical(f'igneo api return code {self._estymaapi._returncode}')
+            _LOGGER.critical(f'igneo api return code {self._estymaapi.returncode}')
             return
 
         try:
