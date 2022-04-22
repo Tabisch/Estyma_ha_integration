@@ -79,7 +79,7 @@ class IgneoSensor(SensorEntity):
         self._Device_Id = device[CONF_DEVICE_ID]
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {ATTR_device_id: self._Device_Id}
+        self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: self._Device_Id}
 
     @property
     def name(self) -> str:
