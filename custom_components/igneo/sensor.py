@@ -69,14 +69,14 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, device) -> None:
+    def __init__(self, estymaapi: EstymaApi, device: Dict[str, str]) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = device["name"]
         self._Device_Id = device["device_id"]
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {ATTR_status_burner_current_sub1: "None"}
+        self.attrs: Dict[str, Any] = {ATTR_device_id: self._Device_Id}
 
     @property
     def name(self) -> str:
