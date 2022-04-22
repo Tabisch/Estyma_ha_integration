@@ -59,13 +59,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
-    _LOGGER.critical("igneo platform")
-
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
-
-    await Api.initialize()
-
-    _LOGGER.critical("igneo platform: after init")
+    
+    Api.initialize()
     
     sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
@@ -99,15 +95,14 @@ class IgneoSensor(SensorEntity):
 
     async def async_update(self):
         if(self._estymaapi.initialized == False):
-            _LOGGER.critical("igneo api not initialized")
-            _LOGGER.critical(f'igneo api return code {self._estymaapi.returncode}')
+            _LOGGER.info("igneo api not initialized")
+            _LOGGER.info(f'igneo api return code {self._estymaapi.returncode}')
             return
 
         try:
-            _LOGGER.critical(f"updating {self._name} - {self._Device_Id}")
+            _LOGGER.info(f"updating {self._name} - {self._Device_Id}")
             devicedata = await self._estymaapi.getDeviceData(self._Device_Id)
             self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f'{ATTR_consumption_fuel_total_current_sub1}']
             self.attrs[ATTR_status_burner_current_sub1] = devicedata[f'{ATTR_status_burner_current_sub1}']
         except:
-            _LOGGER.exception("Shit hit the fan")
             _LOGGER.exception(traceback.print_exc())
