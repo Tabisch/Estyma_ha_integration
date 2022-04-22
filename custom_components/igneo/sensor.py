@@ -129,8 +129,6 @@ class IgneoSensor(SensorEntity):
             self.attrs[ATTR_status_pump_heating_curcuit1_sub1] = devicedata[f'{ATTR_status_pump_heating_curcuit1_sub1}']
             self.attrs[ATTR_temp_buffer_top_sub1] = devicedata[f'{ATTR_temp_buffer_top_sub1}']
             self.attrs[ATTR_temp_buffer_bottom_sub1] = devicedata[f'{ATTR_temp_buffer_bottom_sub1}']
-            self.attrs[ATTR_device_type_sub1] = devicedata[f'{ATTR_device_type_sub1}']
-
         except:
             _LOGGER.exception("Shit hit the fan")
             _LOGGER.exception(traceback.print_exc())
