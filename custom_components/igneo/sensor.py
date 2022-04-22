@@ -130,14 +130,7 @@ class IgneoSensor(SensorEntity):
             self.attrs[ATTR_temp_buffer_top_sub1] = devicedata[f'{ATTR_temp_buffer_top_sub1}']
             self.attrs[ATTR_temp_buffer_bottom_sub1] = devicedata[f'{ATTR_temp_buffer_bottom_sub1}']
             self.attrs[ATTR_device_type_sub1] = devicedata[f'{ATTR_device_type_sub1}']
-            self.attrs[ATTR_number_obw_heating_curcuit_sub1] = devicedata[f'{ATTR_number_obw_heating_curcuit_sub1}']
-            self.attrs[ATTR_number_obw_cwu_sub1] = devicedata[f'{ATTR_number_obw_cwu_sub1}']
-            self.attrs[ATTR_number_buffers_sub1] = devicedata[f'{ATTR_number_buffers_sub1}']
-            self.attrs[ATTR_status_solar_connected_sub1] = devicedata[f'{ATTR_status_solar_connected_sub1}']
-            self.attrs[ATTR_state_lamda_sub1] = devicedata[f'{ATTR_state_lamda_sub1}']
-            self.attrs[ATTR_temp_boiler_target_sub1] = devicedata[f'{ATTR_temp_boiler_target_sub1}']
-            self.attrs[ATTR_temp_boiler_target_sub3] = devicedata[f'{ATTR_temp_boiler_target_sub3}']
-            self.attrs[ATTR_temp_boiler_target_sub4] = devicedata[f'{ATTR_temp_boiler_target_sub4}']
+
         except:
             _LOGGER.exception("Shit hit the fan")
             _LOGGER.exception(traceback.print_exc())
