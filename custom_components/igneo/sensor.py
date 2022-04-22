@@ -76,7 +76,7 @@ class IgneoSensor(SensorEntity):
         super().__init__()
         self._estymaapi = estymaapi
         self._name = device["name"]
-        self._Device_Id = device[CONF_DEVICE_ID]
+        self._Device_Id = device["device_id"]
         self._state = None
         self._available = True
         self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: self._Device_Id}
