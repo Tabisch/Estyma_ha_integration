@@ -64,6 +64,8 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
 
     Api.initialize()
+
+    _LOGGER.critical("igneo platform: after init")
     
     sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
     async_add_entities(sensors, update_before_add=True)
@@ -77,7 +79,7 @@ class IgneoSensor(SensorEntity):
         self._Device_Id = device[CONF_DEVICE_ID]
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {ATTR_deviceid: self._DeviceId}
+        self.attrs: Dict[str, Any] = {ATTR_device_id: self._DeviceId}
 
     @property
     def name(self) -> str:
