@@ -4,6 +4,7 @@ from tokenize import String
 import traceback
 from typing import Any, Callable, Dict, Optional
 import json
+from typing_extensions import Self
 
 from EstymaApiWrapper import EstymaApi
 
@@ -37,20 +38,11 @@ _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
 
-CONF_DEVICES = "devices"
-
-IGNEO_DEVICE_SCHEMA = vol.Schema(
-    {
-        vol.Required(CONF_DEVICE_ID): cv.string,
-        vol.Optional(CONF_NAME): cv.string
-    }
-)
-
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_USERNAME): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Required(CONF_DEVICES): vol.All(cv.ensure_list,[IGNEO_DEVICE_SCHEMA])
+        vol.Optional(ATTR_language): cv.string
     }
 )
 
@@ -59,20 +51,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
-    Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD])
+    Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD], config[ATTR_language])
     
-    Api.initialize()
+    await Api.initialize()
+
+    sensors = []
+
+    for device_id in list(Api.Devices.keys()):
+        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id))
     
-    sensors = [IgneoSensor(Api, device) for device in config[CONF_DEVICES]]
+    
     async_add_entities(sensors, update_before_add=True)
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, device: Dict[str, str]) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
         self._estymaapi = estymaapi
-        self._name = device["name"]
-        self._Device_Id = device["device_id"]
+        self._name = deviceAttribute
+        self._Device_Id = Device_Id
         self._state = None
         self._available = True
         self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: self._Device_Id}
@@ -83,7 +84,7 @@ class IgneoSensor(SensorEntity):
 
     @property
     def unique_id(self) -> str:
-        return self._Device_Id
+        return f"{self._Device_Id}-{self._name}"
 
     @property
     def extra_state_attributes(self) -> Dict[str, Any]:
@@ -101,8 +102,6 @@ class IgneoSensor(SensorEntity):
 
         try:
             _LOGGER.info(f"updating {self._name} - {self._Device_Id}")
-            devicedata = await self._estymaapi.getDeviceData(self._Device_Id)
-            self.attrs[ATTR_consumption_fuel_total_current_sub1] = devicedata[f'{ATTR_consumption_fuel_total_current_sub1}']
-            self.attrs[ATTR_status_burner_current_sub1] = devicedata[f'{ATTR_status_burner_current_sub1}']
+            self.state = self._estymaapi.getDeviceData(self._Device_Id)[self._name]
         except:
             _LOGGER.exception(traceback.print_exc())
