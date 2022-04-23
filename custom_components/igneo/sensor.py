@@ -63,6 +63,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
         sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id))
         sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id))
         sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
     
     
     async_add_entities(sensors, update_before_add=True)
