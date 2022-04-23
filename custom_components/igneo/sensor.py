@@ -72,11 +72,11 @@ class IgneoSensor(SensorEntity):
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
         self._estymaapi = estymaapi
-        self._name = deviceAttribute
-        self._Device_Id = Device_Id
+        self._name = f"{Device_Id}_{deviceAttribute}"
+        self._attributename = deviceAttribute
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: self._Device_Id}
+        self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: Device_Id}
 
     @property
     def name(self) -> str:
@@ -84,7 +84,7 @@ class IgneoSensor(SensorEntity):
 
     @property
     def unique_id(self) -> str:
-        return f"{self._Device_Id}-{self._name}"
+        return f"{self._name}"
 
     @property
     def extra_state_attributes(self) -> Dict[str, Any]:
@@ -101,8 +101,8 @@ class IgneoSensor(SensorEntity):
             return
 
         try:
-            _LOGGER.info(f"updating {self._name} - {self._Device_Id}")
-            _LOGGER.info(type(self._estymaapi.getDeviceData(self._Device_Id)))
-            self.state = self._estymaapi.getDeviceData(self._Device_Id)[self._name]
+            _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+            _LOGGER.info(type(await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])))
+            self.state = (self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID]))[self._name]
         except:
             _LOGGER.exception(traceback.print_exc())
