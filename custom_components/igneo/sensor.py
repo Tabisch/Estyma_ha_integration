@@ -66,18 +66,21 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
         sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
         sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
         sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
-    
+        sensors.append(IgneoSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
     
     async_add_entities(sensors, update_before_add=True)
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
-        self._attr_native_unit_of_measurement = native_unit_of_measurement
+        
+        if(native_unit_of_measurement != None):
+            self._attr_native_unit_of_measurement = native_unit_of_measurement
+
         self._state = None
         self._available = True
         self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: Device_Id}
