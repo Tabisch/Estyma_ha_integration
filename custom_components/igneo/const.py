@@ -4,6 +4,7 @@ ATTR_language = "language"
 
 ATTR_device_id = "device_id"
 ATTR_consumption_fuel_total_current_sub1 = "consumption_fuel_total_current_sub1"
+ATTR_consumption_fuel_current_day = "consumption_fuel_current_day"
 ATTR_temp_boiler_return_sub1 = "temp_boiler_return_sub1"
 ATTR_temp_heating_curcuit1_sub1 = "temp_heating_curcuit1_sub1"
 ATTR_temp_heating_curcuit2_sub1 = "temp_heating_curcuit2_sub1"

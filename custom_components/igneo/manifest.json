@@ -6,6 +6,6 @@
   "domain": "igneo",
   "iot_class": "cloud_polling",
   "name": "Igneo",
-  "requirements": ["EstymaApiWrapper==0.0.39"],
+  "requirements": ["EstymaApiWrapper==0.0.40"],
   "version": "0.0.1"
 }
