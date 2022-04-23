@@ -28,8 +28,9 @@ from homeassistant.const import (
     CONF_USERNAME,
     CONF_PASSWORD,
     CONF_DEVICE_ID,
-    CONF_NAME,
-    CONF_UNIT_OF_MEASUREMENT
+    PERCENTAGE,
+    TEMP_CELSIUS,
+    MASS_KILOGRAMS
 )
 
 from .const import *
@@ -58,11 +59,11 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     sensors = []
 
     for device_id in list(Api.Devices.keys()):
-        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, PERCENTAGE))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
         sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
     
     
@@ -70,11 +71,12 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class IgneoSensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
+        self._attr_native_unit_of_measurement = native_unit_of_measurement
         self._state = None
         self._available = True
         self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: Device_Id}
@@ -103,6 +105,7 @@ class IgneoSensor(SensorEntity):
 
         try:
             _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-            self._state = (await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID]))[self._attributename]
+            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
+            self._state = ()[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
