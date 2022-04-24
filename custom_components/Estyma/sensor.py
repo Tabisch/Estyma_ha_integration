@@ -111,6 +111,9 @@ async def native_unit_decider(input: str):
     if("consumption" in input):
         return MASS_KILOGRAMS
 
+    if("content" in input):
+        return PERCENTAGE
+
     return None
 
 
