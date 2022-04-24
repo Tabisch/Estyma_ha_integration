@@ -31,6 +31,8 @@ from homeassistant.const import (
 
 from .const import *
 
+from .const_estyma_attributes import *
+
 estymaAttribues = list(
     ATTR_consumption_fuel_total_current_sub1,
     ATTR_consumption_fuel_current_day,
