@@ -1,7 +1,15 @@
 {
     "config": {
         "error": {
-            "auth": "Auth Error"
+            "auth": "Email or Password is incorrect."
+        },
+        "step": {
+            "data": {
+                "Email": "Email Adresse",
+                "Password": "Password"
+            },
+            "description": "Enter Username and Password",
+            "title": "Authentication"
         }
     }
 }

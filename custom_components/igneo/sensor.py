@@ -1,6 +1,5 @@
 import logging
 from datetime import timedelta
-from tokenize import String
 import traceback
 from typing import Any, Callable, Dict, Optional
 
@@ -56,14 +55,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
-        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
+        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_status_burner_current_sub1, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
     
     async_add_entities(sensors, update_before_add=True)
 
@@ -76,23 +75,23 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
-        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
-        sensors.append(IgneoSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
+        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_status_burner_current_sub1, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
     
     async_add_entities(sensors, update_before_add=True)
 
-class IgneoSensor(SensorEntity):
+class EstymaSensor(SensorEntity):
 
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
-        self._name = f"{Device_Id}_{deviceAttribute}"
+        self._name = f"{DOMAIN}-{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
         
         if(native_unit_of_measurement != None):
