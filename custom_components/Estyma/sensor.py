@@ -104,7 +104,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-def native_unit_decider(input: str):
+async def native_unit_decider(input: str):
     if("temp" in input):
         return TEMP_CELSIUS
 
@@ -126,7 +126,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
     for device_id in list(Api.devices.keys()):
         for estymaAttribue in estymaAttribues:
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, native_unit_decider(estymaAttribue))) 
+            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
     
     async_add_entities(sensors, update_before_add=True)
 
