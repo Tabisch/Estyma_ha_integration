@@ -90,7 +90,7 @@ class EstymaSensor(SensorEntity):
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
-        self._name = f"{DOMAIN}-{Device_Id}_{deviceAttribute}"
+        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
         
         if(native_unit_of_measurement != None):
@@ -126,7 +126,7 @@ class EstymaSensor(SensorEntity):
         return {
             "identifiers": {
                 # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, self.unique_id)
+                (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
             },
             "name": f"{DEFAULT_NAME}-{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
