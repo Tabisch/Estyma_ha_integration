@@ -140,7 +140,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
     for device_id in list(Api.devices.keys()):
         for estymaAttribue in estymaAttribues:
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, native_unit_decider(estymaAttribue))) 
+            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
     
     async_add_entities(sensors, update_before_add=True)
 
