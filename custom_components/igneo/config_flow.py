@@ -10,14 +10,10 @@ from homeassistant.const import (
     CONF_PASSWORD
     
 )
-from homeassistant.helpers.entity_registry import (
-    async_entries_for_config_entry,
-    async_get_registry,
-)
 
 from EstymaApiWrapper import EstymaApi
 
-from const import DOMAIN
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
