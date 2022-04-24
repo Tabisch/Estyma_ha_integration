@@ -52,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
-    Api = EstymaApi(config[CONF_USERNAME],config[CONF_PASSWORD], config[ATTR_language])
+    Api = EstymaApi(Username= config[CONF_USERNAME], Password= config[CONF_PASSWORD], language= config[ATTR_language])
     
     await Api.initialize()
 
@@ -110,7 +110,6 @@ class IgneoSensor(SensorEntity):
         try:
             _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
-            _LOGGER.info(f"{data}")
             self._state = data[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
