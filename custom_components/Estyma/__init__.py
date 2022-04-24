@@ -1,8 +1,6 @@
 import logging
 
 from homeassistant import config_entries, core
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD
-
 
 from .const import DOMAIN
 
