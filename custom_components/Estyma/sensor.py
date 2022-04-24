@@ -130,8 +130,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     _LOGGER.critical(estymaAttribues)
 
     for device_id in list(Api.devices.keys()):
-        for estymaAttribue in estymaAttribues:
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
+        sensors = [EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue)) for estymaAttribue in estymaAttribues]
     
     async_add_entities(sensors, update_before_add=True)
 
@@ -144,8 +143,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        for estymaAttribue in estymaAttribues:
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
+        sensors = [EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue)) for estymaAttribue in estymaAttribues]
     
     async_add_entities(sensors, update_before_add=True)
 
