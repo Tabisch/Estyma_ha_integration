@@ -31,67 +31,6 @@ from homeassistant.const import (
 
 from .const import *
 
-estymaAttribues = list(
-    ATTR_consumption_fuel_total_current_sub1,
-    ATTR_consumption_fuel_current_day,
-    ATTR_temp_boiler_return_sub1,
-    ATTR_temp_heating_curcuit1_sub1,
-    ATTR_temp_heating_curcuit2_sub1,
-    ATTR_temp_heating_curcuit3_sub1,
-    ATTR_temp_heating_curcuit4_sub1,
-    ATTR_power_output_boiler_sub1,
-    ATTR_lamda_pwm_sub1,
-    ATTR_temp_lamda_sub1,
-    ATTR_temp_boiler_sub1,
-    ATTR_temp_boiler_obli_sub1,
-    ATTR_temp_exhaust_boiler_sub1,
-    ATTR_oxygen_content_exhaust_sub1,
-    ATTR_status_burner_current_sub1,
-    ATTR_fuel_fill_level_sub1,
-    ATTR_temp_outside_sub1,
-    ATTR_energy_meter_sub1,
-    ATTR_status_boiler_pump_sub1,
-    ATTR_sensor_type_circuit1_sub1,
-    ATTR_target_temp_obw1_sub1,
-    ATTR_status_pump_heating_curcuit1_sub1,
-    ATTR_temp_buffer_top_sub1,
-    ATTR_temp_buffer_bottom_sub1,
-    ATTR_device_type_sub1,
-    ATTR_number_obw_heating_curcuit_sub1,
-    ATTR_number_obw_cwu_sub1,
-    ATTR_number_buffers_sub1,
-    ATTR_status_solar_connected_sub1,
-    ATTR_state_lamda_sub1,
-    ATTR_temp_boiler_target_sub1,
-    ATTR_temp_boiler_target_sub3,
-    ATTR_temp_boiler_target_sub4,
-    ATTR_burner_enabled_sub1,
-    ATTR_operation_mode_boiler_sub1,
-    ATTR_status_controller_sub1,
-    ATTR_cwu_heat_now_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub3,
-    ATTR_target_temp_room_comf_heating_curcuit_sub4,
-    ATTR_target_temp_room_eco_heating_curcuit_sub1,
-    ATTR_target_temp_room_eco_heating_curcuit_sub3,
-    ATTR_target_temp_room_eco_heating_curcuit_sub4,
-    ATTR_heating_curcuit_prog_obw1_sub1,
-    ATTR_target_temp_buffer_top_sub1,
-    ATTR_target_temp_buffer_top_sub3,
-    ATTR_target_temp_buffer_top_sub4,
-    ATTR_target_temp_buffer_bottom_sub1,
-    ATTR_target_temp_buffer_bottom_sub3,
-    ATTR_target_temp_buffer_bottom_sub4,
-    ATTR_timer_heating_curcuit1_monday_sub1,
-    ATTR_timer_heating_curcuit1_tuesday_sub1,
-    ATTR_timer_heating_curcuit1_wednesday_sub1,
-    ATTR_timer_heating_curcuit1_thursday_sub1,
-    ATTR_timer_heating_curcuit1_friday_sub1,
-    ATTR_timer_heating_curcuit1_saturday_sub1,
-    ATTR_timer_heating_curcuit1_sunday_sub1,
-    ATTR_current_status_burner_sub1_int
-)
-
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
@@ -128,8 +67,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        for estymaAttribue in estymaAttribues.keys():
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, await native_unit_decider(ATTR_consumption_fuel_total_current_sub1))) 
     
     async_add_entities(sensors, update_before_add=True)
 
@@ -142,8 +80,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        for estymaAttribue in estymaAttribues.keys:
-            sensors.append(EstymaSensor(Api, estymaAttribue, device_id, await native_unit_decider(estymaAttribue))) 
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, await native_unit_decider(ATTR_consumption_fuel_total_current_sub1))) 
     
     async_add_entities(sensors, update_before_add=True)
 
