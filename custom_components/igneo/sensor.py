@@ -110,6 +110,7 @@ class IgneoSensor(SensorEntity):
         try:
             _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
-            self._state = (data)[self._attributename]
+            _LOGGER.info(f"{data}")
+            self._state = data[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
