@@ -31,8 +31,6 @@ from homeassistant.const import (
 
 from .const import *
 
-from .const_estyma_attributes import *
-
 estymaAttribues = list(
     ATTR_consumption_fuel_total_current_sub1,
     ATTR_consumption_fuel_current_day,
@@ -128,6 +126,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     await Api.initialize()
 
     sensors = []
+
+    _LOGGER.critical(estymaAttribues)
 
     for device_id in list(Api.devices.keys()):
         for estymaAttribue in estymaAttribues:
