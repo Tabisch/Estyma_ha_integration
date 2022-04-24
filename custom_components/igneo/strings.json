@@ -6,7 +6,8 @@
         "step": {
             "data": {
                 "Email": "Email Adresse",
-                "Password": "Password"
+                "Password": "Password",
+                "language": "language (optional)"
             },
             "description": "Enter Username and Password",
             "title": "Authentication"

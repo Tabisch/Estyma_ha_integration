@@ -14,7 +14,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
@@ -45,7 +44,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    _LOGGER.critical("igneo entry")
+    _LOGGER.critical("Estyma entry")
     config = hass.data[DOMAIN][entry.entry_id]
 
     Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], language= config[ATTR_language])
@@ -119,8 +118,8 @@ class EstymaSensor(SensorEntity):
 
     async def async_update(self):
         if(self._estymaapi.initialized == False):
-            _LOGGER.info("igneo api not initialized")
-            _LOGGER.info(f'igneo api return code {self._estymaapi.returncode}')
+            _LOGGER.info("Estyma api not initialized")
+            _LOGGER.info(f'Estyma api return code {self._estymaapi.returncode}')
             return
 
         try:

@@ -1,4 +1,5 @@
 import logging
+import string
 from typing import Any, Dict, Optional
 
 import voluptuous as vol
@@ -13,14 +14,15 @@ from homeassistant.const import (
 
 from EstymaApiWrapper import EstymaApi
 
-from .const import DOMAIN
+from .const import DOMAIN, ATTR_language
 
 _LOGGER = logging.getLogger(__name__)
 
 options_schema = vol.Schema(
     {
         vol.Required(CONF_EMAIL): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string
+        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Optional(ATTR_language): cv.string
     }
 )
 
@@ -41,7 +43,7 @@ class IgneoFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 errors["base"] = "auth"
 
             if not errors:
-                return self.async_create_entry(title="Igneo", data=user_input)
+                return self.async_create_entry(title="Estyma", data=user_input)
 
         return self.async_show_form(
             step_id="user", data_schema=options_schema, errors=errors
