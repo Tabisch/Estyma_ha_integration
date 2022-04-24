@@ -5,7 +5,7 @@
   "documentation": "https://github.com/Tabisch/igneo",
   "domain": "Estyma",
   "iot_class": "cloud_polling",
-  "name": "Igneo",
+  "name": "Estyma",
   "requirements": ["EstymaApiWrapper==0.0.45"],
   "version": "0.0.1"
 }

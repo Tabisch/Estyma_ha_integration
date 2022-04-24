@@ -26,8 +26,8 @@ options_schema = vol.Schema(
     }
 )
 
-class IgneoFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Igneo config flow."""
+class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Estyma config flow."""
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Handle user step."""

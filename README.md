@@ -1,3 +1,3 @@
-# Igneo for Home Assistant
+# Estyma for Home Assistant
 
 ## Installation
