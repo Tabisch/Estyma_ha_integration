@@ -1,5 +1,7 @@
 DOMAIN = "Estyma"
 
+DEFAULT_NAME = "Estyma"
+
 ATTR_language = "language"
 
 ATTR_device_id = "device_id"

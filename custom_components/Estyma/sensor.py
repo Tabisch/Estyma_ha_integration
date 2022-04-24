@@ -121,16 +121,16 @@ class EstymaSensor(SensorEntity):
     def state(self) -> Optional[str]:
         return self._state
 
-    #@property
-    #def device_info(self):
-    #    return {
-    #        "identifiers": {
-    #            # Serial numbers are unique identifiers within a specific domain
-    #            (Estyma.DOMAIN, self.unique_id)
-    #        },
-    #        "name": self.name,
-    #        "manufacturer": "{Domain}",
-    #    }
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                # Serial numbers are unique identifiers within a specific domain
+                (DOMAIN, self.unique_id)
+            },
+            "name": self.name,
+            "manufacturer": DEFAULT_NAME,
+        }
 
     async def async_update(self):
         if(self._estymaapi.initialized == False):
