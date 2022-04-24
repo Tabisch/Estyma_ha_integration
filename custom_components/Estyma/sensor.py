@@ -104,6 +104,11 @@ class EstymaSensor(SensorEntity):
     def name(self) -> str:
         return self._name
 
+    # Todo automatic names
+    #@property
+    #def displayname(self):
+    #    return "text"
+
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
@@ -121,7 +126,7 @@ class EstymaSensor(SensorEntity):
         return {
             "identifiers": {
                 # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, self.unique_id)
+                (Estyma.DOMAIN, self.unique_id)
             },
             "name": self.name,
             "manufacturer": "{Domain}",
