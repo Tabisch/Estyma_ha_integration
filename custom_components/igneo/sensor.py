@@ -3,8 +3,6 @@ from datetime import timedelta
 from tokenize import String
 import traceback
 from typing import Any, Callable, Dict, Optional
-import json
-from typing_extensions import Self
 
 from EstymaApiWrapper import EstymaApi
 
@@ -25,7 +23,7 @@ from homeassistant.helpers.typing import (
 )
 
 from homeassistant.const import (
-    CONF_USERNAME,
+    CONF_EMAIL,
     CONF_PASSWORD,
     CONF_DEVICE_ID,
     PERCENTAGE,
@@ -41,7 +39,7 @@ SCAN_INTERVAL = timedelta(seconds=30)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
-        vol.Required(CONF_USERNAME): cv.string,
+        vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
         vol.Optional(ATTR_language): cv.string
     }
@@ -49,16 +47,35 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     _LOGGER.critical("igneo entry")
+    config = hass.data[DOMAIN][entry.entry_id]
 
-async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
-    """Set up the sensor platform."""
-    Api = EstymaApi(Username= config[CONF_USERNAME], Password= config[CONF_PASSWORD], language= config[ATTR_language])
+    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], language= config[ATTR_language])
     
     await Api.initialize()
 
     sensors = []
 
-    for device_id in list(Api.Devices.keys()):
+    for device_id in list(Api.devices.keys()):
+        sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
+        sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(IgneoSensor(Api, ATTR_status_burner_current_sub1, device_id))
+        sensors.append(IgneoSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
+    
+    async_add_entities(sensors, update_before_add=True)
+
+async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
+    """Set up the sensor platform."""
+    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], language= config[ATTR_language])
+    
+    await Api.initialize()
+
+    sensors = []
+
+    for device_id in list(Api.devices.keys()):
         sensors.append(IgneoSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
         sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
         sensors.append(IgneoSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
