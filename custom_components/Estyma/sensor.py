@@ -43,19 +43,6 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-async def native_unit_decider(input: str):
-    if("temp" in input):
-        return TEMP_CELSIUS
-
-    if("consumption" in input):
-        return MASS_KILOGRAMS
-
-    if("content" in input):
-        return PERCENTAGE
-
-    return None
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
     _LOGGER.critical("Estyma entry")
     config = hass.data[DOMAIN][entry.entry_id]
@@ -67,7 +54,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, await native_unit_decider(ATTR_consumption_fuel_total_current_sub1))) 
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS)) 
     
     async_add_entities(sensors, update_before_add=True)
 
@@ -80,7 +67,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     sensors = []
 
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, await native_unit_decider(ATTR_consumption_fuel_total_current_sub1))) 
+        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS)) 
     
     async_add_entities(sensors, update_before_add=True)
 
