@@ -128,7 +128,7 @@ class EstymaSensor(SensorEntity):
                 # Serial numbers are unique identifiers within a specific domain
                 (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
             },
-            "name": f"{DEFAULT_NAME}-{self.attrs[CONF_DEVICE_ID]}",
+            "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
 
