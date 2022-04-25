@@ -1,3 +1,8 @@
+This whole project is in alpha right now.
+It is crashing and not updating alot at the moment.
+
+There will be updates until i'm happy with it.
+
 # Estyma for Home Assistant
 
 Integrate your heating system into Home Assistant \
