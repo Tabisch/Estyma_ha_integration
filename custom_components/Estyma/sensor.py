@@ -52,7 +52,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     await Api.initialize()
 
     sensors = []
-
+    #ToDo cleanup
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
         sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
@@ -111,7 +111,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     await Api.initialize()
 
     sensors = []
-
+    #ToDo cleanup
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
         sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
