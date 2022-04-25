@@ -100,7 +100,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+    #    sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
     
     async_add_entities(sensors, update_before_add=True)
 
@@ -159,7 +159,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+    #    sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
     
     async_add_entities(sensors, update_before_add=True)
 
