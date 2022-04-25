@@ -1,5 +1,5 @@
-This whole project is in alpha right now.\
-It is crashing and not updating alot at the moment.
+This whole project is in beta right now.\
+It works, but is prone for crashing and failing updates at the moment.
 
 There will be updates until i'm happy with it.
 
@@ -7,7 +7,7 @@ There will be updates until i'm happy with it.
 
 Integrate your heating system into Home Assistant \
 All Systems, that are provided by Estyma.pl should be supported. \
-I know that Igneo.pl and bia21.net both work. \
+I know that Igneo.pl and bia21.net both work. 
 
 If you find more domains, please test, if it works.
 I will add those to the list.
