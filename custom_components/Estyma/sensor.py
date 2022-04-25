@@ -151,7 +151,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-    #   sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
+    #    sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub3, device_id, TEMP_CELSIUS))
