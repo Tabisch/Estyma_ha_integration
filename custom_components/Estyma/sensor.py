@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import timedelta
 import traceback
@@ -34,6 +35,7 @@ from .const import *
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
+_failedInitSleepTime = 5
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -43,13 +45,13 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     }
 )
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
-    _LOGGER.info("Estyma entry")
-    config = hass.data[DOMAIN][entry.entry_id]
-
-    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
-    
-    await Api.initialize()
+async def setup(Api: EstymaApi):
+    while(Api.initialized == False):
+        await Api.initialize(throw_Execetion= False)
+        if(Api.initialized == False):
+            break
+        else:
+            asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
     #ToDo cleanup
@@ -79,7 +81,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         sensors.append(EstymaSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_number_obw_heating_curcuit_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_number_obw_cwu_sub1, device_id))
-    #   sensors.append(EstymaSensor(Api, ATTR_number_buffers_sub1, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_number_buffers_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_status_solar_connected_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_state_lamda_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
@@ -92,7 +94,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-    #   sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub3, device_id, TEMP_CELSIUS))
@@ -100,68 +102,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
-    #    sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+
+    return sensors
+
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+    config = hass.data[DOMAIN][entry.entry_id]
+
+    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
     
-    async_add_entities(sensors, update_before_add=True)
+    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
-    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
+    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
     
-    await Api.initialize()
-
-    sensors = []
-    #ToDo cleanup
-    for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_return_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit2_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit3_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit4_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_power_output_boiler_sub1, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaSensor(Api, ATTR_lamda_pwm_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_lamda_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_obli_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_exhaust_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
-        sensors.append(EstymaSensor(Api, ATTR_status_burner_current_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_fuel_fill_level_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_outside_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_energy_meter_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_status_boiler_pump_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_obw1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_status_pump_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_number_obw_heating_curcuit_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_number_obw_cwu_sub1, device_id))
-    #   sensors.append(EstymaSensor(Api, ATTR_number_buffers_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_status_solar_connected_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_state_lamda_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_burner_enabled_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_operation_mode_boiler_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_status_controller_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-    #    sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
-    #    sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
-    
-    async_add_entities(sensors, update_before_add=True)
+    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
 class EstymaSensor(SensorEntity):
 
@@ -215,13 +171,13 @@ class EstymaSensor(SensorEntity):
         }
 
     async def async_update(self):
-        if(self._estymaapi.initialized == False):
-            _LOGGER.debug("Estyma api not initialized")
-            _LOGGER.debug(f'Estyma api return code {self._estymaapi.returncode}')
-            return
+        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+
+        while(self._estymaapi.updatingData == True):
+            _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+            asyncio.sleep(1)
 
         try:
-            _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
             self._state = data[self._attributename]
             self.attrs["last_update"] = data["online"]["last_date"]
