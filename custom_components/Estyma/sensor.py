@@ -176,7 +176,11 @@ class EstymaSensor(SensorEntity):
 
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {CONF_DEVICE_ID: Device_Id}
+        self.attrs: Dict[str, Any] = {
+            CONF_DEVICE_ID: Device_Id,
+            "last_update": "",
+            "last_update_diff": ""
+        }
 
     @property
     def name(self) -> str:
@@ -212,14 +216,15 @@ class EstymaSensor(SensorEntity):
 
     async def async_update(self):
         if(self._estymaapi.initialized == False):
-            _LOGGER.info("Estyma api not initialized")
-            _LOGGER.info(f'Estyma api return code {self._estymaapi.returncode}')
+            _LOGGER.debug("Estyma api not initialized")
+            _LOGGER.debug(f'Estyma api return code {self._estymaapi.returncode}')
             return
 
         try:
-            _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+            _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
-            _LOGGER.info(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]} - {data[self._attributename]}")
             self._state = data[self._attributename]
+            self.attrs["last_update"] = data["online"]["last_date"]
+            self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
             _LOGGER.exception(traceback.print_exc())
