@@ -70,7 +70,7 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_obli_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_temp_exhaust_boiler_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
-        sensors.append(EstymaSensor(Api, ATTR_status_burner_current_sub1, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_fuel_fill_level_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_temp_outside_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_energy_meter_sub1, device_id))
