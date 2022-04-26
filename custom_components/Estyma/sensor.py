@@ -47,7 +47,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
     _LOGGER.info("Estyma entry")
     config = hass.data[DOMAIN][entry.entry_id]
 
-    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], language= config[ATTR_language])
+    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
     
     await Api.initialize()
 
@@ -106,7 +106,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
 
 async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
     """Set up the sensor platform."""
-    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], language= config[ATTR_language])
+    Api = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
     
     await Api.initialize()
 
