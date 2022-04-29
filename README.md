@@ -1,8 +1,3 @@
-This whole project is in beta right now.\
-It works, but is prone for crashing and failing updates at the moment.
-
-There will be updates until i'm happy with it.
-
 # Estyma for Home Assistant
 
 Integrate your heating system into Home Assistant \
