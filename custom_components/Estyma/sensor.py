@@ -103,6 +103,7 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_staledata, device_id))
 
     return sensors
 
@@ -179,7 +180,12 @@ class EstymaSensor(SensorEntity):
 
         try:
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
-            self._state = data[self._attributename]
+
+            if ATTR_staledata in self._name:
+                self._state = data["online"]["staleData"]
+            else:
+                self._state = data[self._attributename]
+
             self.attrs["last_update"] = data["online"]["last_date"]
             self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
