@@ -8,12 +8,8 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.components import binary_sensor
-from homeassistant.components.binary_sensor import (
-    DEVICE_CLASSES_SCHEMA,
-    BinarySensorEntity,
-)
+from homeassistant.components.binary_sensor import PLATFORM_SCHEMA
+from homeassistant.components.binary_sensor import BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -28,10 +24,7 @@ from homeassistant.helpers.typing import (
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD,
-    CONF_DEVICE_ID,
-    PERCENTAGE,
-    TEMP_CELSIUS,
-    MASS_KILOGRAMS
+    CONF_DEVICE_ID
 )
 
 from .const import *
@@ -55,12 +48,12 @@ async def setup(Api: EstymaApi):
         if(Api.initialized == False):
             break
         else:
-            asyncio.sleep(_failedInitSleepTime)
+            await asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSensor(Api, ATTR_dataUpToDate, device_id))
+        sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
 
     return sensors
 
@@ -77,7 +70,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaSensor(BinarySensorEntity):
+class EstymaBinarySensor(BinarySensorEntity):
 
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()

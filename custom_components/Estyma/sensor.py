@@ -51,7 +51,7 @@ async def setup(Api: EstymaApi):
         if(Api.initialized == False):
             break
         else:
-            asyncio.sleep(_failedInitSleepTime)
+            await asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
     #ToDo cleanup
