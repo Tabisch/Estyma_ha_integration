@@ -72,14 +72,11 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class EstymaBinarySensor(BinarySensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
-        
-        if(native_unit_of_measurement != None):
-            self._attr_native_unit_of_measurement = native_unit_of_measurement
 
         self._state = None
         self._available = True
@@ -122,7 +119,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         }
 
     async def async_update(self):
-        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+        _LOGGER.warn(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         #while(self._estymaapi.updatingData == True):
         #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
