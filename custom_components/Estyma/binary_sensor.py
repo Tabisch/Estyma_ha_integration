@@ -114,7 +114,7 @@ class EstymaSensor(BinarySensorEntity):
         return self.attrs
 
     @property
-    def state(self) -> Optional[str]:
+    def is_on(self):
         return self._state
 
     @property
