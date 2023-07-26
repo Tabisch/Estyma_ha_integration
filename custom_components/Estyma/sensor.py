@@ -103,7 +103,7 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_staledata, device_id))
+        sensors.append(EstymaSensor(Api, ATTR_dataUpToDate, device_id))
 
     return sensors
 
