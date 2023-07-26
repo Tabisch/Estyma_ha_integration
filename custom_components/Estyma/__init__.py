@@ -4,7 +4,7 @@ from homeassistant import config_entries, core
 
 from .const import DOMAIN
 
-PLATFORMS = ["sensor"]
+PLATFORMS = ["sensor","binary_sensor"]
 
 
 _LOGGER = logging.getLogger(__name__)
