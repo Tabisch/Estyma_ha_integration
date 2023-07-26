@@ -1,5 +1,6 @@
 {
   "name": "Estyma",
   "render_readme": true,
+  "hide_default_branch": true,
   "iot_class": "cloud_polling"
 }
