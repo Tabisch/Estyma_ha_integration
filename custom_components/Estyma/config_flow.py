@@ -38,7 +38,7 @@ class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
             #ToDo implement login validation
             try:
                 # await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
-                (EstymaApi(Email= CONF_EMAIL, Password= CONF_PASSWORD))._login()
+                await (EstymaApi(Email= CONF_EMAIL, Password= CONF_PASSWORD))._login()
             except ValueError:
                 errors["base"] = "auth"
 
