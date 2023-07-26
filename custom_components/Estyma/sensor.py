@@ -51,7 +51,7 @@ async def setup(Api: EstymaApi):
         if(Api.initialized == False):
             break
         else:
-            asyncio.sleep(_failedInitSleepTime)
+            await asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
     #ToDo cleanup
@@ -179,7 +179,9 @@ class EstymaSensor(SensorEntity):
 
         try:
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
+
             self._state = data[self._attributename]
+
             self.attrs["last_update"] = data["online"]["last_date"]
             self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
