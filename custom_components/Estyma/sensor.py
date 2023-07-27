@@ -132,11 +132,6 @@ class EstymaSensor(SensorEntity):
 
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
-        }
 
     @property
     def name(self) -> str:
@@ -150,10 +145,6 @@ class EstymaSensor(SensorEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-
-    @property
-    def extra_state_attributes(self) -> Dict[str, Any]:
-        return self.attrs
 
     @property
     def state(self) -> Optional[str]:
@@ -181,8 +172,5 @@ class EstymaSensor(SensorEntity):
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
 
             self._state = data[self._attributename]
-
-            self.attrs["last_update"] = data["online"]["last_date"]
-            self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
             _LOGGER.exception(traceback.print_exc())

@@ -53,7 +53,7 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
+        sensors.append(EstymaBinarySwitch(Api, ATTR_status_controller_sub1, device_id))
 
     return sensors
 
@@ -80,11 +80,6 @@ class EstymaBinarySwitch(SwitchEntity):
 
         self._state = None
         self._available = True
-        self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
-        }
 
     @property
     def name(self) -> str:
@@ -98,10 +93,6 @@ class EstymaBinarySwitch(SwitchEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-
-    @property
-    def extra_state_attributes(self) -> Dict[str, Any]:
-        return self.attrs
 
     @property
     def is_on(self):
@@ -118,13 +109,13 @@ class EstymaBinarySwitch(SwitchEntity):
             "manufacturer": DEFAULT_NAME,
         }
     
-    async def async_turn_on(self, **kwargs):
+    async def async_turn_on(self):
         """Turn the entity on."""
     
-    async def async_turn_off(self, **kwargs):
+    async def async_turn_off(self):
         """Turn the entity off."""
 
-    async def async_toggle(self, **kwargs):
+    async def async_toggle(self):
         """Toggle the entity."""
 
     async def async_update(self):
@@ -138,8 +129,5 @@ class EstymaBinarySwitch(SwitchEntity):
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
 
             self._state = data[self._attributename]
-
-            self.attrs["last_update"] = data["online"]["last_date"]
-            self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
             _LOGGER.exception(traceback.print_exc())
