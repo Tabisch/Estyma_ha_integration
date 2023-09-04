@@ -76,13 +76,14 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class EstymaNumberEntity(NumberEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-
+        if(native_unit_of_measurement != None):
+            self._attr_native_unit_of_measurement = native_unit_of_measurement
 
         self._available = True
         self.attrs: Dict[str, Any] = {
