@@ -9,7 +9,7 @@ from EstymaApiWrapper import EstymaApi
 import voluptuous as vol
 
 from homeassistant.components.binary_sensor import PLATFORM_SCHEMA
-from homeassistant.components.select import SelectEntity
+from homeassistant.components.number import NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -54,11 +54,11 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSelectEntity(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSelectEntity(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSelectEntity(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSelectEntity(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSelectEntity(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaNumberEntity(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
     return sensors
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -74,7 +74,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaSelectEntity(SelectEntity):
+class EstymaNumberEntity(NumberEntity):
 
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
