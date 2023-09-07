@@ -84,10 +84,10 @@ class EstymaNumberEntity(NumberEntity):
         self._attributename = deviceAttribute
         self._enabled = True
 
-        settingsKeys = settings[deviceAttribute].keys()
         settingsAttribute = settings[deviceAttribute]
+        settingsKeys = settingsAttribute.keys()
 
-        if settings:
+        if settingsAttribute != None:
             for key in settingsKeys:
                 if settingsAttribute[key]["selected"] == True:
                     self._native_value = int(settingsAttribute[key]["name"])
