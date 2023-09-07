@@ -54,11 +54,12 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaNumberEntity(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
+        settings = await Api.getAvailableSettings(device_id)
+        sensors.append(EstymaNumberEntity(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS, settings))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS, settings))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS, settings))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS, settings))
+        sensors.append(EstymaNumberEntity(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS, settings))
     return sensors
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -76,11 +77,26 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class EstymaNumberEntity(NumberEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None, settings = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
+        self._enabled = True
+
+        settingsKeys = settings[deviceAttribute].keys()
+        settingsAttribute = settings[deviceAttribute]
+
+        if settings:
+            for key in settingsKeys:
+                if settingsAttribute[key]["selected"] == True:
+                    self._native_value = int(settingsAttribute[key]["name"])
+
+            self._native_min_value = int(settingsAttribute[0]["name"])
+            self._native_max_value = int(settingsAttribute[len(settingsKeys) - 1]["name"])
+            self._native_step = int(settingsAttribute[1]["name"]) - int(settingsAttribute[0]["name"])
+        else:
+            self._enabled = False
 
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
@@ -106,12 +122,28 @@ class EstymaNumberEntity(NumberEntity):
         return f"{self._name}"
 
     @property
-    def extra_state_attributes(self) -> Dict[str, Any]:
-        return self.attrs
+    def enabled(self) -> bool:
+        return self._enabled
 
     @property
-    def is_on(self):
-        return self._state
+    def extra_state_attributes(self) -> Dict[str, Any]:
+        return self.attrs
+    
+    @property
+    def native_value(self) -> float | int | None:
+        return self._native_value
+    
+    @property
+    def native_min_value(self) -> float | int | None:
+        return self._native_min_value
+    
+    @property
+    def native_max_value(self) -> float | int | None:
+        return self._native_max_value
+    
+    @property
+    def native_step(self) -> float | int | None:
+        return self._native_step
 
     @property
     def device_info(self):
@@ -141,5 +173,5 @@ class EstymaNumberEntity(NumberEntity):
         except:
             _LOGGER.exception(traceback.print_exc())
 
-    async def async_select_option(self, option: str) -> None:
-        """Change the selected option."""
+    async def async_set_native_value(self, value: float) -> None:
+        self._native_value = value
