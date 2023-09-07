@@ -86,15 +86,16 @@ class EstymaNumberEntity(NumberEntity):
 
         settingsAttribute = settings[deviceAttribute]
         settingsKeys = settingsAttribute.keys()
+        settingsKeysList = list(settingsKeys)
 
         if settingsAttribute != None:
             for key in settingsKeys:
                 if settingsAttribute[key]["selected"] == True:
                     self._native_value = int(settingsAttribute[key]["name"])
 
-            self._native_min_value = int(settingsAttribute[settingsKeys[0]]["name"])
-            self._native_max_value = int(settingsAttribute[len(settingsKeys) - 1]["name"])
-            self._native_step = int(settingsAttribute[settingsKeys[0]]["name"]) - int(settingsAttribute[settingsKeys[0]]["name"])
+            self._native_min_value = int(settingsAttribute[settingsKeysList[0]]["name"])
+            self._native_max_value = int(settingsAttribute[len(settingsKeysList) - 1]["name"])
+            self._native_step = int(settingsAttribute[settingsKeysList[0]]["name"]) - int(settingsAttribute[settingsKeysList[0]]["name"])
         else:
             self._enabled = False
 
