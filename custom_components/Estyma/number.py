@@ -94,8 +94,8 @@ class EstymaNumberEntity(NumberEntity):
                     self._native_value = int(settingsAttribute[key]["name"])
 
             self._native_min_value = int(settingsAttribute[settingsKeysList[0]]["name"])
-            self._native_max_value = int(settingsAttribute[len(settingsKeysList) - 1]["name"])
-            self._native_step = int(settingsAttribute[settingsKeysList[0]]["name"]) - int(settingsAttribute[settingsKeysList[0]]["name"])
+            self._native_max_value = int(settingsAttribute[f"{len(settingsKeysList) - 1}"]["name"])
+            self._native_step = int(settingsAttribute[settingsKeysList[1]]["name"]) - int(settingsAttribute[settingsKeysList[0]]["name"])
         else:
             self._enabled = False
 
