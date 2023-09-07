@@ -92,9 +92,9 @@ class EstymaNumberEntity(NumberEntity):
                 if settingsAttribute[key]["selected"] == True:
                     self._native_value = int(settingsAttribute[key]["name"])
 
-            self._native_min_value = int(settingsAttribute[0]["name"])
+            self._native_min_value = int(settingsAttribute[settingsKeys[0]]["name"])
             self._native_max_value = int(settingsAttribute[len(settingsKeys) - 1]["name"])
-            self._native_step = int(settingsAttribute[1]["name"]) - int(settingsAttribute[0]["name"])
+            self._native_step = int(settingsAttribute[settingsKeys[0]]["name"]) - int(settingsAttribute[settingsKeys[0]]["name"])
         else:
             self._enabled = False
 
@@ -158,6 +158,8 @@ class EstymaNumberEntity(NumberEntity):
 
     async def async_update(self):
         _LOGGER.warn(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+
+        return
 
         #while(self._estymaapi.updatingData == True):
         #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
