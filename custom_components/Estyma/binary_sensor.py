@@ -119,7 +119,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         }
 
     async def async_update(self):
-        _LOGGER.warn(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         #while(self._estymaapi.updatingData == True):
         #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
