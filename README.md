@@ -14,7 +14,9 @@ Add Tabisch/Estyma_ha_integration to your integrations in hacs.
 ## Configuartion
 
 Use your login Credentials to add the Integration. \
-You can set the language for the output by typing the following in the language field.
+You can set the language for the output by typing the following in the language field. \
+The list of languages maybe incomplete, because the backend i use may add languages over time. \
+The current list is now a few years old.
 
 german \
 polish \
