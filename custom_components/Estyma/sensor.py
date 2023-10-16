@@ -87,7 +87,6 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_burner_enabled_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_operation_mode_boiler_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_status_controller_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))

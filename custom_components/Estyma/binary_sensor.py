@@ -54,6 +54,7 @@ async def setup(Api: EstymaApi):
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
+        sensors.append(EstymaBinarySensor(Api, ATTR_burner_enabled_sub1, device_id))
 
     return sensors
 
@@ -117,7 +118,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         #    asyncio.sleep(1)
 
         try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
+            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
 
             self._state = data[self._attributename]
         except:
