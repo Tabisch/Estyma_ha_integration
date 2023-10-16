@@ -81,6 +81,12 @@ class EstymaBinarySwitch(SwitchEntity):
         self._state = None
         self._available = True
 
+        self.attrs: Dict[str, Any] = {
+            CONF_DEVICE_ID: Device_Id,
+            "last_update": "",
+            "last_update_diff": ""
+        }
+
     @property
     def name(self) -> str:
         return self._name
