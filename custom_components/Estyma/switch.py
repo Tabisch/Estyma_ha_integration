@@ -117,17 +117,36 @@ class EstymaBinarySwitch(SwitchEntity):
     
     async def async_turn_on(self):
         """Turn the entity on."""
+
+        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            return
+        
+        self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 1)
+
+        self._state = True
     
     async def async_turn_off(self):
         """Turn the entity off."""
 
+        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            return
+        
+        self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 0)
+
+        self._state = False
+
     async def async_toggle(self):
         """Toggle the entity."""
+
+        if self._state:
+            self.async_turn_off()
+        else:
+            self.async_turn_on()
 
     async def async_update(self):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        if self.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
             return
 
         try:
