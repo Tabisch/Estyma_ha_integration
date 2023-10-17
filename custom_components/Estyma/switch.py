@@ -127,8 +127,11 @@ class EstymaBinarySwitch(SwitchEntity):
     async def async_update(self):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
+        if self.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            return
+
         try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
+            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
 
             self._state = data[self._attributename]
         except:
