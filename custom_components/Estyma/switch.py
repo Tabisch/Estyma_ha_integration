@@ -117,23 +117,23 @@ class EstymaBinarySwitch(SwitchEntity):
     
     async def async_turn_on(self):
         """Turn the entity on."""
-
-        _LOGGER.debug(f"turning on {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            _LOGGER.debug(f"turning on disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             return
-        
+        else:
+            _LOGGER.debug(f"turning on {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+
         await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 1)
 
         self._state = True
     
     async def async_turn_off(self):
         """Turn the entity off."""
-
-        _LOGGER.debug(f"turning off {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            _LOGGER.debug(f"turning off disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             return
+        else:
+            _LOGGER.debug(f"turning off {self._name} - {self.attrs[CONF_DEVICE_ID]}")
         
         await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 0)
 
@@ -150,10 +150,11 @@ class EstymaBinarySwitch(SwitchEntity):
             self.async_turn_on()
 
     async def async_update(self):
-        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
+            _LOGGER.debug(f"updating disabled - entity is updating  {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             return
+        else:
+            _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         try:
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
