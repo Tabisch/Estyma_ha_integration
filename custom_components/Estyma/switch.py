@@ -158,7 +158,7 @@ class EstymaBinarySwitch(SwitchEntity):
         try:
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
 
-            _LOGGER.debug(f"current state {self._attributename} {data[self._attributename]}")
+            _LOGGER.debug(f"current state {self._attributename} {bool(data[self._attributename])}")
 
             self._state = bool(data[self._attributename])
         except:
