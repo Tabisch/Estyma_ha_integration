@@ -6,6 +6,6 @@
   "domain": "Estyma",
   "iot_class": "cloud_polling",
   "name": "Estyma",
-  "requirements": ["EstymaApiWrapper==0.0.62"],
+  "requirements": ["EstymaApiWrapper==0.0.63"],
   "version": "1.0.4"
 }
