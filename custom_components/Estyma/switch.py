@@ -90,6 +90,8 @@ class EstymaBinarySwitch(SwitchEntity):
             "last_update_diff": ""
         }
 
+        _LOGGER.debug(f"Setup complete {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+
     @property
     def name(self) -> str:
         return self._name
@@ -153,6 +155,8 @@ class EstymaBinarySwitch(SwitchEntity):
             self.async_turn_on()
 
     async def async_update(self):
+        _LOGGER.debug(f"update started {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
             _LOGGER.debug(f"updating disabled - entity is updating  {self._name} - {self.attrs[CONF_DEVICE_ID]}")
             return
