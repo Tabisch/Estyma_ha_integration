@@ -43,6 +43,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 async def setup(Api: EstymaApi):
+
+    _LOGGER.debug("Setting up binary_sensors")
+
     while(Api.initialized == False):
         await Api.initialize(throw_Execetion= False)
         if(Api.initialized == False):
