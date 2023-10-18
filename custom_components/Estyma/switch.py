@@ -160,6 +160,6 @@ class EstymaBinarySwitch(SwitchEntity):
 
             _LOGGER.debug(f"current state {self._attributename} {data[self._attributename]}")
 
-            self._state = data[self._attributename]
+            self._state = bool(data[self._attributename])
         except:
             _LOGGER.exception(traceback.print_exc())
