@@ -121,7 +121,7 @@ class EstymaBinarySwitch(SwitchEntity):
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
             return
         
-        self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 1)
+        await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 1)
 
         self._state = True
     
@@ -131,7 +131,7 @@ class EstymaBinarySwitch(SwitchEntity):
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
             return
         
-        self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 0)
+        await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 0)
 
         self._state = False
 
