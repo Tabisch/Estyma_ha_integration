@@ -159,6 +159,7 @@ class EstymaBinarySwitch(SwitchEntity):
 
         if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
             _LOGGER.debug(f"updating disabled - entity is updating  {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+            _LOGGER.debug(await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename))
             return
         #else:
         #    _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
