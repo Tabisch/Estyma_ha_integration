@@ -194,7 +194,7 @@ class EstymaEnergySensor(SensorEntity):
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
-        self._deviceReferenceAttribute = deviceReferenceAttribute
+        self._deviceReferenceAttribute = f"sensor.{DOMAIN}_{Device_Id}_{deviceReferenceAttribute}"
         
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
