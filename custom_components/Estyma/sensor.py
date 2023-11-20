@@ -8,8 +8,7 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, PLATFORM_SCHEMA
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -28,7 +27,9 @@ from homeassistant.const import (
     PERCENTAGE,
     TEMP_CELSIUS,
     MASS_KILOGRAMS,
-    ENERGY_KILO_WATT_HOUR
+    ENERGY_KILO_WATT_HOUR,
+    ENERGY_MEGA_WATT_HOUR,
+    ENERGY_WATT_HOUR
 )
 
 from .const import *
@@ -198,6 +199,10 @@ class EstymaEnergySensor(SensorEntity):
         
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
+            self._attr_native_unit_of_measurement
+
+        if(native_unit_of_measurement == ENERGY_KILO_WATT_HOUR or native_unit_of_measurement == ENERGY_MEGA_WATT_HOUR or native_unit_of_measurement == ENERGY_WATT_HOUR) :
+            self._attr_device_class = SensorDeviceClass.ENERGY
 
         self._state = None
         self._available = True
