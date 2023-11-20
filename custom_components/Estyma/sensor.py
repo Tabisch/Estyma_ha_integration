@@ -27,7 +27,8 @@ from homeassistant.const import (
     CONF_DEVICE_ID,
     PERCENTAGE,
     TEMP_CELSIUS,
-    MASS_KILOGRAMS
+    MASS_KILOGRAMS,
+    KILO_WATT_HOUR
 )
 
 from .const import *
@@ -105,6 +106,10 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
 
+        
+        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, KILO_WATT_HOUR))
+        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, KILO_WATT_HOUR))
+
     return sensors
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -181,3 +186,53 @@ class EstymaSensor(SensorEntity):
             self._state = data[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
+
+class EstymaEnergySensor(SensorEntity):
+
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = KILO_WATT_HOUR) -> None:
+        super().__init__()
+        self._estymaapi = estymaapi
+        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
+        self._attributename = deviceAttribute
+        self._deviceReferenceAttribute = deviceReferenceAttribute
+        
+        if(native_unit_of_measurement != None):
+            self._attr_native_unit_of_measurement = native_unit_of_measurement
+
+        self._state = None
+        self._available = True
+
+        self.attrs: Dict[str, Any] = {
+            CONF_DEVICE_ID: Device_Id
+        }
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    # Todo automatic names
+    #@property
+    #def displayname(self):
+    #    return "text"
+
+    @property
+    def unique_id(self) -> str:
+        return f"{self._name}"
+
+    @property
+    def state(self) -> Optional[str]:
+        return self._state
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                # Serial numbers are unique identifiers within a specific domain
+                (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
+            },
+            "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
+            "manufacturer": DEFAULT_NAME,
+        }
+
+    async def async_update(self):
+        self.state = hass.states.get(self._deviceReferenceAttribute) * 4.8
