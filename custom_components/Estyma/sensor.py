@@ -240,4 +240,4 @@ class EstymaEnergySensor(SensorEntity):
         _LOGGER.warn(f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue.state}")
 
         if _deviceReferenceAttributeValue.state:
-            self.state = _deviceReferenceAttributeValue.state * 4.8
+            self.state = float(_deviceReferenceAttributeValue.state) * 4.8
