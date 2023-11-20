@@ -235,8 +235,8 @@ class EstymaEnergySensor(SensorEntity):
         }
 
     async def async_update(self):
-        _deviceReferenceAttributeValue = self.hass.states.get(self._deviceReferenceAttribute).state
+        _deviceReferenceAttributeValue = self.hass.states.get(self._deviceReferenceAttribute)
         _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue}")
 
         if _deviceReferenceAttributeValue:
-            self.state = _deviceReferenceAttributeValue * 4.8
+            self.state = _deviceReferenceAttributeValue.state * 4.8
