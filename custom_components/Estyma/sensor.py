@@ -28,7 +28,7 @@ from homeassistant.const import (
     PERCENTAGE,
     TEMP_CELSIUS,
     MASS_KILOGRAMS,
-    KILO_WATT_HOUR
+    ENERGY_KILO_WATT_HOUR
 )
 
 from .const import *
@@ -107,8 +107,8 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
 
         
-        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, KILO_WATT_HOUR))
-        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, KILO_WATT_HOUR))
+        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR))
+        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR))
 
     return sensors
 
@@ -189,7 +189,7 @@ class EstymaSensor(SensorEntity):
 
 class EstymaEnergySensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = KILO_WATT_HOUR) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = ENERGY_KILO_WATT_HOUR) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
@@ -235,4 +235,4 @@ class EstymaEnergySensor(SensorEntity):
         }
 
     async def async_update(self):
-        self.state = hass.states.get(self._deviceReferenceAttribute) * 4.8
+        self.state = self.hass.states.get(self._deviceReferenceAttribute) * 4.8
