@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 import traceback
 from typing import Any, Callable, Dict, Optional
 
@@ -229,6 +229,18 @@ class EstymaEnergySensor(SensorEntity):
     @property
     def state(self) -> Optional[str]:
         return self._state
+    
+    @property
+    def last_reset(self) -> datetime | None:
+        return None
+    
+    @property
+    def native_value(self):
+        return self._attr_state
+
+    @property
+    def state_class(self):
+        return self._attr_state_class
 
     @property
     def device_info(self):
