@@ -46,6 +46,9 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 async def setup(Api: EstymaApi):
+
+    _LOGGER.debug("Setting up sensors")
+
     while(Api.initialized == False):
         await Api.initialize(throw_Execetion= False)
         if(Api.initialized == False):
@@ -87,9 +90,7 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_burner_enabled_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_operation_mode_boiler_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_status_controller_sub1, device_id))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
@@ -132,6 +133,7 @@ class EstymaSensor(SensorEntity):
 
         self._state = None
         self._available = True
+
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
@@ -150,10 +152,6 @@ class EstymaSensor(SensorEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-
-    @property
-    def extra_state_attributes(self) -> Dict[str, Any]:
-        return self.attrs
 
     @property
     def state(self) -> Optional[str]:
@@ -181,8 +179,5 @@ class EstymaSensor(SensorEntity):
             data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
 
             self._state = data[self._attributename]
-
-            self.attrs["last_update"] = data["online"]["last_date"]
-            self.attrs["last_update_diff"] = data["online"]["diff"]
         except:
             _LOGGER.exception(traceback.print_exc())
