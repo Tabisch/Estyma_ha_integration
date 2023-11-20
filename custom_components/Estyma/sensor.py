@@ -8,7 +8,7 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, PLATFORM_SCHEMA
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass, PLATFORM_SCHEMA
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -107,9 +107,8 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
 
-        
-        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR))
-        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR))
+        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL_INCREASING))
+        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL))
 
     return sensors
 
@@ -190,7 +189,7 @@ class EstymaSensor(SensorEntity):
 
 class EstymaEnergySensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = ENERGY_KILO_WATT_HOUR) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = ENERGY_KILO_WATT_HOUR, state_class = SensorStateClass.TOTAL) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
@@ -203,6 +202,8 @@ class EstymaEnergySensor(SensorEntity):
 
         if(native_unit_of_measurement == ENERGY_KILO_WATT_HOUR or native_unit_of_measurement == ENERGY_MEGA_WATT_HOUR or native_unit_of_measurement == ENERGY_WATT_HOUR) :
             self._attr_device_class = SensorDeviceClass.ENERGY
+
+        self._attr_state_class = state_class
 
         self._state = None
         self._available = True
