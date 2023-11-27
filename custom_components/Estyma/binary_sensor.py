@@ -58,6 +58,8 @@ async def setup(Api: EstymaApi):
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
         sensors.append(EstymaBinarySensor(Api, ATTR_burner_enabled_sub1, device_id))
+        sensors.append(EstymaBinarySensor(Api, ATTR_status_pump_heating_curcuit1_sub1, device_id))
+        sensors.append(EstymaBinarySensor(Api, ATTR_status_boiler_pump_sub1, device_id))
 
     return sensors
 
