@@ -1,4 +1,6 @@
 Lib/
 Scripts/
 Include/
+include/
 pyvenv.cfg
+venv/

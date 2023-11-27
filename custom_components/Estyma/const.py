@@ -77,3 +77,6 @@ ATTR_number_of_alarms = "number_of_alarms"
 ATTR__execution_time = "_execution_time"
 ATTR_count_buffers_sub1 = "count_buffers_sub1"
 ATTR_dataUpToDate = "dataUpToDate"
+
+ATTR_total_energy = "total_energy"
+ATTR_daily_energy = "daily_energy"

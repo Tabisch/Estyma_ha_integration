@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 import traceback
 from typing import Any, Callable, Dict, Optional
 
@@ -8,8 +8,7 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.components.sensor import SensorEntity
+from homeassistant.components.sensor import SensorEntity, SensorDeviceClass, SensorStateClass, PLATFORM_SCHEMA
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -27,7 +26,10 @@ from homeassistant.const import (
     CONF_DEVICE_ID,
     PERCENTAGE,
     TEMP_CELSIUS,
-    MASS_KILOGRAMS
+    MASS_KILOGRAMS,
+    ENERGY_KILO_WATT_HOUR,
+    ENERGY_MEGA_WATT_HOUR,
+    ENERGY_WATT_HOUR
 )
 
 from .const import *
@@ -105,6 +107,9 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
         sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
 
+        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL_INCREASING))
+        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL))
+
     return sensors
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -181,3 +186,77 @@ class EstymaSensor(SensorEntity):
             self._state = data[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
+
+class EstymaEnergySensor(SensorEntity):
+
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = ENERGY_KILO_WATT_HOUR, state_class = SensorStateClass.TOTAL) -> None:
+        super().__init__()
+        self._estymaapi = estymaapi
+        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
+        self._attributename = deviceAttribute
+        self._deviceReferenceAttribute = f"sensor.{DOMAIN}_{Device_Id}_{deviceReferenceAttribute}"
+        
+        if(native_unit_of_measurement != None):
+            self._attr_native_unit_of_measurement = native_unit_of_measurement
+            self._attr_native_unit_of_measurement
+
+        if(native_unit_of_measurement == ENERGY_KILO_WATT_HOUR or native_unit_of_measurement == ENERGY_MEGA_WATT_HOUR or native_unit_of_measurement == ENERGY_WATT_HOUR) :
+            self._attr_device_class = SensorDeviceClass.ENERGY
+
+        self._attr_state_class = state_class
+
+        self._state = None
+        self._available = True
+
+        self.attrs: Dict[str, Any] = {
+            CONF_DEVICE_ID: Device_Id,
+            "deviceReferenceAttribute": self._deviceReferenceAttribute
+        }
+
+    @property
+    def name(self) -> str:
+        return self._name
+
+    # Todo automatic names
+    #@property
+    #def displayname(self):
+    #    return "text"
+
+    @property
+    def unique_id(self) -> str:
+        return f"{self._name}"
+
+    @property
+    def state(self) -> Optional[str]:
+        return self._state
+    
+    @property
+    def last_reset(self) -> datetime | None:
+        return None
+    
+    @property
+    def native_value(self):
+        return self._attr_state
+
+    @property
+    def state_class(self):
+        return self._attr_state_class
+
+    @property
+    def device_info(self):
+        return {
+            "identifiers": {
+                # Serial numbers are unique identifiers within a specific domain
+                (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
+            },
+            "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
+            "manufacturer": DEFAULT_NAME,
+        }
+
+    async def async_update(self):
+        _deviceReferenceAttributeValue = self.hass.states.get(self._deviceReferenceAttribute)
+        _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute}")
+
+        if _deviceReferenceAttributeValue:
+            _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue.state}")
+            self._state = float(_deviceReferenceAttributeValue.state) * 4.8
