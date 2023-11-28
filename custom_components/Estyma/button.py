@@ -8,8 +8,8 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.binary_sensor import PLATFORM_SCHEMA
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.button import PLATFORM_SCHEMA
+from homeassistant.components.button import ButtonEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -56,12 +56,9 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
-        sensors.append(EstymaBinarySensor(Api, ATTR_burner_enabled_sub1, device_id))
-        sensors.append(EstymaBinarySensor(Api, ATTR_status_pump_heating_curcuit1_sub1, device_id))
-        sensors.append(EstymaBinarySensor(Api, ATTR_status_boiler_pump_sub1, device_id))
+        sensors.append(EstymaEmptyAshButtonEntity(ATTR_set_last_empty_weight, device_id))
 
-        sensors.append(EstymaEmptyAshBinarySensor(device_id))
+    Api._logout()
 
     return sensors
 
@@ -78,76 +75,16 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaBinarySensor(BinarySensorEntity):
+class EstymaEmptyAshButtonEntity(ButtonEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
+    def __init__(self, deviceAttribute, Device_Id) -> None:
         super().__init__()
-        self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-        self._state = None
-        self._available = True
-
-        self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
-        }
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    # Todo automatic names
-    #@property
-    #def displayname(self):
-    #    return "text"
-
-    @property
-    def unique_id(self) -> str:
-        return f"{self._name}"
-
-    @property
-    def is_on(self):
-        return self._state
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {
-                # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
-            },
-            "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
-            "manufacturer": DEFAULT_NAME,
-        }
-
-    async def async_update(self):
-        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-
-        #while(self._estymaapi.updatingData == True):
-        #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-        #    asyncio.sleep(1)
-
-        try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
-
-            self._state = data[self._attributename]
-        except:
-            _LOGGER.exception(traceback.print_exc())
-
-class EstymaEmptyAshBinarySensor(BinarySensorEntity):
-    def __init__(self, Device_Id) -> None:
-        super().__init__()
-        self._name = f"{DOMAIN}_{Device_Id}_{ATTR_empty_ash}"
-
-        self._weight_offset = 150
-        
         self._last_empty_weight_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
         self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
 
-        self._state = None
         self._available = True
 
         self.attrs: Dict[str, Any] = {
@@ -168,10 +105,10 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-
-    @property
-    def is_on(self):
-        return self._state
+    
+    async def async_press(self) -> None:
+        """Handle the button press."""
+        self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name))
 
     @property
     def device_info(self):
@@ -183,14 +120,3 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
-
-    async def async_update(self):
-        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-
-        last_weight = self.hass.states.get(self._last_empty_weight_name)
-        current_weight = self.hass.states.get(self._consumption_fuel_total_current_sub1_name)
-
-        if current_weight - last_weight > self._weight_offset:
-            self._state = True
-        else:
-            self._state = False

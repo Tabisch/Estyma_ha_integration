@@ -80,3 +80,6 @@ ATTR_dataUpToDate = "dataUpToDate"
 
 ATTR_total_energy = "total_energy"
 ATTR_daily_energy = "daily_energy"
+ATTR_last_empty_weight = "last_empty_weight"
+ATTR_empty_ash = "empty_ash"
+ATTR_set_last_empty_weight = "set_last_empty_weight"
