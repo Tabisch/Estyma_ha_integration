@@ -108,7 +108,7 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
     
     def press(self) -> None:
         """Handle the button press."""
-        self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name))
+        self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name).state)
 
     @property
     def device_info(self):
