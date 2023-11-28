@@ -106,7 +106,7 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
     def unique_id(self) -> str:
         return f"{self._name}"
     
-    async def async_press(self) -> None:
+    def press(self) -> None:
         """Handle the button press."""
         self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name))
 

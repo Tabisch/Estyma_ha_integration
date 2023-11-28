@@ -191,7 +191,7 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
         current_weight = self.hass.states.get(self._consumption_fuel_total_current_sub1_name)
 
         if last_weight and current_weight:
-            if current_weight - last_weight > self._weight_offset:
+            if current_weight.state - last_weight.state > self._weight_offset:
                 self._state = True
             else:
                 self._state = False
