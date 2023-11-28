@@ -302,3 +302,6 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
+    
+    async def async_update(self):
+        return
