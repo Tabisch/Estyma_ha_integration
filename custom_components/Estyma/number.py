@@ -8,8 +8,8 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.button import PLATFORM_SCHEMA
-from homeassistant.components.button import ButtonEntity
+from homeassistant.components.number import NumberEntity
+from homeassistant.components.number import PLATFORM_SCHEMA
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -24,7 +24,8 @@ from homeassistant.helpers.typing import (
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD,
-    CONF_DEVICE_ID
+    CONF_DEVICE_ID,
+    MASS_KILOGRAMS
 )
 
 from .const import *
@@ -56,7 +57,7 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaEmptyAshButtonEntity(ATTR_set_last_empty_weight, device_id))
+        sensors.append(EstymaLastEmptyWeightNumber(device_id))
 
     await Api._logout()
 
@@ -75,22 +76,18 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaEmptyAshButtonEntity(ButtonEntity):
+class EstymaLastEmptyWeightNumber(NumberEntity):
 
-    def __init__(self, deviceAttribute, Device_Id) -> None:
+    def __init__(self, Device_Id) -> None:
         super().__init__()
-        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
-        self._attributename = deviceAttribute
+        self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
 
-        self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
-        self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
-
+        self._attr_native_unit_of_measurement = MASS_KILOGRAMS
+        
         self._available = True
 
         self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
+            CONF_DEVICE_ID: Device_Id
         }
 
     @property
@@ -105,10 +102,6 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-    
-    def press(self) -> None:
-        """Handle the button press."""
-        self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name).state)
 
     @property
     def device_info(self):
