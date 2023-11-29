@@ -58,7 +58,7 @@ async def setup(Api: EstymaApi):
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaEmptyAshButtonEntity(ATTR_set_last_empty_weight, device_id))
 
-    await Api._logout()
+    Api._logout()
 
     return sensors
 
@@ -82,7 +82,7 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-        self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._last_empty_weight_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
         self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
 
         self._available = True

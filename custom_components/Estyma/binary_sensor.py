@@ -144,7 +144,7 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
 
         self._weight_offset = 150
         
-        self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._last_empty_weight_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
         self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
 
         self._state = None
