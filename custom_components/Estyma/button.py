@@ -82,15 +82,10 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-        self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
-        self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
-
         self._available = True
 
         self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
+            CONF_DEVICE_ID: Device_Id
         }
 
     @property
@@ -108,7 +103,7 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
     
     def press(self) -> None:
         """Handle the button press."""
-        self.hass.states.set(self._last_empty_weight_name, self.hass.states.get(self._consumption_fuel_total_current_sub1_name).state)
+        self.hass.bus.fire(f"{DOMAIN}_ashEmptied")
 
     @property
     def device_info(self):
