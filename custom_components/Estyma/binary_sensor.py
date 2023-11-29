@@ -152,6 +152,8 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
 
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
+            "last_update": "",
+            "last_update_diff": ""
         }
 
     @property
