@@ -265,10 +265,14 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
     def __init__(self, Device_Id) -> None:
         super().__init__()
         self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._bus_event_name = f"{DOMAIN}_{Device_Id}_{ATTR_set_last_empty_weight}"
+        self._last_empty_weight_name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
 
         self._attr_native_unit_of_measurement = MASS_KILOGRAMS
 
-        #self._state = None
+        self._busActive = False
+
+        self._state = None
         self._available = True
 
         self.attrs: Dict[str, Any] = {
@@ -288,9 +292,9 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
     def unique_id(self) -> str:
         return f"{self._name}"
 
-    #@property
-    #def state(self) -> Optional[str]:
-    #    return self._state
+    @property
+    def state(self) -> Optional[str]:
+        return self._state
 
     @property
     def device_info(self):
@@ -302,3 +306,11 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
+    
+    async def async_update(self):
+        if self._busActive == False:
+            self.hass.bus.listen(self._bus_event_name, self.setState)
+            self._busActive = True
+
+    async def setState(self):
+        self._state = self.hass.states.get(self._last_empty_weight_name).state
