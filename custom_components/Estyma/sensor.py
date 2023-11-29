@@ -268,7 +268,7 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
 
         self._attr_native_unit_of_measurement = MASS_KILOGRAMS
 
-        self._state = None
+        #self._state = None
         self._available = True
 
         self.attrs: Dict[str, Any] = {
@@ -288,9 +288,9 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
     def unique_id(self) -> str:
         return f"{self._name}"
 
-    @property
-    def state(self) -> Optional[str]:
-        return self._state
+    #@property
+    #def state(self) -> Optional[str]:
+    #    return self._state
 
     @property
     def device_info(self):
@@ -302,6 +302,3 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
-    
-    async def async_update(self):
-        return
