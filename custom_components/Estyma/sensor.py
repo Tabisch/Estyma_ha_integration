@@ -271,8 +271,6 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
         
         self._available = True
 
-        self.hass.bus.listen(f"{DOMAIN}_ashEmptied", self.setState)
-
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id
         }
@@ -312,6 +310,3 @@ class EstymaLastEmptyWeightSensor(SensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
-    
-    def setState(self):
-        self._state = self.hass.states.get(self.hass.states.get(self._consumption_fuel_total_current_sub1_name).state)
