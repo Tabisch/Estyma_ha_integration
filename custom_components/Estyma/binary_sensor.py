@@ -10,6 +10,7 @@ import voluptuous as vol
 
 from homeassistant.components.binary_sensor import PLATFORM_SCHEMA
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -137,7 +138,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         except:
             _LOGGER.exception(traceback.print_exc())
 
-class EstymaEmptyAshBinarySensor(BinarySensorEntity):
+class EstymaEmptyAshBinarySensor(RestoreEntity, BinarySensorEntity):
     def __init__(self, Device_Id) -> None:
         super().__init__()
         self._name = f"{DOMAIN}_{Device_Id}_{ATTR_empty_ash}"
@@ -182,6 +183,14 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
+    
+    async def async_added_to_hass(self) -> None:
+        """Handle entity which will be added."""
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        if not state:
+            return
+        self._state = state.state
 
     async def async_update(self):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
