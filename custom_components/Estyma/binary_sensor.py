@@ -141,10 +141,9 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
     def __init__(self, Device_Id) -> None:
         super().__init__()
         self._name = f"{DOMAIN}_{Device_Id}_{ATTR_empty_ash}"
-
-        self._weight_offset = 150
         
         self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._last_empty_weight_offset_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight_offset}"
         self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
 
         self._state = None
@@ -188,10 +187,11 @@ class EstymaEmptyAshBinarySensor(BinarySensorEntity):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         last_weight = self.hass.states.get(self._last_empty_weight_name)
+        last_weight_offset = self.hass.states.get(self._last_empty_weight_offset_name)
         current_weight = self.hass.states.get(self._consumption_fuel_total_current_sub1_name)
 
         if last_weight and current_weight:
-            if int(current_weight.state) - int(last_weight.state) > self._weight_offset:
+            if float(current_weight.state) - float(last_weight.state) > float(last_weight_offset):
                 self._state = True
             else:
                 self._state = False
