@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from datetime import timedelta
+from datetime import timedelta, datetime
 import traceback
 from typing import Any, Callable, Dict, Optional
 
@@ -8,9 +8,7 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.button import PLATFORM_SCHEMA
-from homeassistant.components.button import ButtonEntity
-from homeassistant.components.number import SERVICE_SET_VALUE, DOMAIN as numberDomain
+from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -25,7 +23,13 @@ from homeassistant.helpers.typing import (
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD,
-    CONF_DEVICE_ID
+    CONF_DEVICE_ID,
+    PERCENTAGE,
+    TEMP_CELSIUS,
+    MASS_KILOGRAMS,
+    ENERGY_KILO_WATT_HOUR,
+    ENERGY_MEGA_WATT_HOUR,
+    ENERGY_WATT_HOUR
 )
 
 from .const import *
@@ -45,7 +49,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 
 async def setup(Api: EstymaApi):
 
-    _LOGGER.debug("Setting up binary_sensors")
+    _LOGGER.debug("Setting up sensors")
 
     while(Api.initialized == False):
         await Api.initialize(throw_Execetion= False)
@@ -57,9 +61,7 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaEmptyAshButtonEntity(ATTR_set_last_empty_weight, device_id))
-
-    await Api._logout()
+        sensors.append(EstymaLastEmptyWeightNumber(device_id))
 
     return sensors
 
@@ -76,22 +78,18 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaEmptyAshButtonEntity(ButtonEntity):
+class EstymaLastEmptyWeightNumber(NumberEntity):
 
-    def __init__(self, deviceAttribute, Device_Id) -> None:
+    def __init__(self, Device_Id) -> None:
         super().__init__()
-        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
-        self._attributename = deviceAttribute
+        self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
 
-        self._consumption_fuel_total_current_sub1_name = f"sensor.{DOMAIN}_{Device_Id}_{ATTR_consumption_fuel_total_current_sub1}"
-        self._last_empty_weight_name = f"number.{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._attr_native_unit_of_measurement = MASS_KILOGRAMS
 
         self._available = True
 
         self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": ""
+            CONF_DEVICE_ID: Device_Id
         }
 
     @property
@@ -106,11 +104,6 @@ class EstymaEmptyAshButtonEntity(ButtonEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
-    
-    def press(self) -> None:
-        """Handle the button press."""
-        
-        self.hass.services.call(numberDomain, SERVICE_SET_VALUE)
 
     @property
     def device_info(self):

@@ -108,8 +108,6 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL_INCREASING))
         sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL))
 
-        sensors.append(EstymaLastEmptyWeightSensor(device_id))
-
     return sensors
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
@@ -259,58 +257,3 @@ class EstymaEnergySensor(SensorEntity):
         if _deviceReferenceAttributeValue:
             _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue.state}")
             self._state = float(_deviceReferenceAttributeValue.state) * 4.8
-
-class EstymaLastEmptyWeightSensor(SensorEntity):
-
-    def __init__(self, Device_Id) -> None:
-        super().__init__()
-        self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
-        self._bus_event_name = f"{DOMAIN}_{Device_Id}_{ATTR_set_last_empty_weight}"
-        self._last_empty_weight_name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
-
-        self._attr_native_unit_of_measurement = MASS_KILOGRAMS
-
-        self._busActive = False
-
-        self._state = None
-        self._available = True
-
-        self.attrs: Dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id
-        }
-
-    @property
-    def name(self) -> str:
-        return self._name
-
-    # Todo automatic names
-    #@property
-    #def displayname(self):
-    #    return "text"
-
-    @property
-    def unique_id(self) -> str:
-        return f"{self._name}"
-
-    @property
-    def state(self) -> Optional[str]:
-        return self._state
-
-    @property
-    def device_info(self):
-        return {
-            "identifiers": {
-                # Serial numbers are unique identifiers within a specific domain
-                (DOMAIN, f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}")
-            },
-            "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
-            "manufacturer": DEFAULT_NAME,
-        }
-    
-    async def async_update(self):
-        if self._busActive == False:
-            self.hass.bus.listen(self._bus_event_name, self.setState)
-            self._busActive = True
-
-    async def setState(self):
-        self._state = self.hass.states.get(self._last_empty_weight_name).state
