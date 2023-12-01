@@ -195,7 +195,7 @@ class EstymaEmptyAshBinarySensor(RestoreEntity, BinarySensorEntity):
             return
         self._state = state.state
 
-    async def check_ash_full(self, entity, old, new):
+    def check_ash_full(self, entity, old, new):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         last_weight = self.hass.states.get(self._last_empty_weight_name)
