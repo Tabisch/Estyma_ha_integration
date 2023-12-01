@@ -9,6 +9,7 @@ from EstymaApiWrapper import EstymaApi
 import voluptuous as vol
 
 from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity
+from homeassistant.components.number.const import MODE_BOX
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -85,7 +86,9 @@ class EstymaLastEmptyWeightNumber(NumberEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
 
         self._attr_native_unit_of_measurement = MASS_KILOGRAMS
+        self._attr_mode = MODE_BOX
 
+        self._state = None
         self._available = True
 
         self.attrs: Dict[str, Any] = {
@@ -104,6 +107,14 @@ class EstymaLastEmptyWeightNumber(NumberEntity):
     @property
     def unique_id(self) -> str:
         return f"{self._name}"
+
+    @property
+    def state(self) -> Optional[str]:
+        return self._state
+    
+    def set_native_value(self, value: float) -> None:
+        """Update the current value."""
+        self._state = value
 
     @property
     def device_info(self):
