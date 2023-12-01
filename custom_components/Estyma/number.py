@@ -90,8 +90,8 @@ class EstymaNumber(NumberEntity):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
 
         self._attr_mode = MODE_BOX
-        self._attr_max_value: 999999999
-        self._attr_min_value: 0
+        self._attr_native_max_value: 999999999
+        self._attr_native_min_value: 0
 
         self._state = None
         self._available = True
