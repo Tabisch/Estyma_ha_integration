@@ -14,6 +14,7 @@ from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers import event
 
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.typing import (
@@ -156,6 +157,8 @@ class EstymaEmptyAshBinarySensor(RestoreEntity, BinarySensorEntity):
             "last_update_diff": ""
         }
 
+        event.async_track_state_change(self.hass, self._consumption_fuel_total_current_sub1_name, self.check_ash_full)
+
     @property
     def name(self) -> str:
         return self._name
@@ -192,7 +195,7 @@ class EstymaEmptyAshBinarySensor(RestoreEntity, BinarySensorEntity):
             return
         self._state = state.state
 
-    async def async_update(self):
+    async def check_ash_full(self):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         last_weight = self.hass.states.get(self._last_empty_weight_name)
