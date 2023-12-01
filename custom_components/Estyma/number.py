@@ -8,10 +8,9 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity, NumberEntityDescription
+from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity, NumberEntityDescription, RestoreNumber
 from homeassistant.components.number.const import MODE_BOX
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 import homeassistant.helpers.config_validation as cv
@@ -88,7 +87,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaNumber(NumberEntity):
+class EstymaNumber(RestoreNumber, NumberEntity):
 
     def __init__(self, description: NumberEntityDescription, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
@@ -136,3 +135,11 @@ class EstymaNumber(NumberEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
+    
+    async def async_added_to_hass(self) -> None:
+        """Handle entity which will be added."""
+        await super().async_added_to_hass()
+        state = await self.async_get_last_state()
+        if not state:
+            return
+        self._state = state.state
