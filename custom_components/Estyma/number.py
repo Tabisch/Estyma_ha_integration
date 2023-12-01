@@ -62,7 +62,8 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaLastEmptyWeightNumber(device_id))
+        sensors.append(EstymaNumber(ATTR_last_empty_weight, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaNumber(ATTR_last_empty_weight_offset, device_id, MASS_KILOGRAMS))
 
     return sensors
 
@@ -79,13 +80,15 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
     
     async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
 
-class EstymaLastEmptyWeightNumber(NumberEntity):
+class EstymaNumber(NumberEntity):
 
-    def __init__(self, Device_Id) -> None:
+    def __init__(self, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
-        self._name = f"{DOMAIN}_{Device_Id}_{ATTR_last_empty_weight}"
+        self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
 
-        self._attr_native_unit_of_measurement = MASS_KILOGRAMS
+        if(native_unit_of_measurement != None):
+            self._attr_native_unit_of_measurement = native_unit_of_measurement
+
         self._attr_mode = MODE_BOX
         self._attr_max_value: 999999999
         self._attr_min_value: 0
