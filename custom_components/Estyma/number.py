@@ -8,7 +8,7 @@ from EstymaApiWrapper import EstymaApi
 
 import voluptuous as vol
 
-from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity
+from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity, NumberEntityDescription
 from homeassistant.components.number.const import MODE_BOX
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
@@ -59,11 +59,19 @@ async def setup(Api: EstymaApi):
         else:
             await asyncio.sleep(_failedInitSleepTime)
 
+    defaultDescription = NumberEntityDescription(
+        key="default",
+        native_max_value=9999999,
+        native_min_value=0,
+        native_step=1,
+        mode=MODE_BOX
+    )
+
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaNumber(ATTR_last_empty_weight, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaNumber(ATTR_last_empty_weight_offset, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaNumber(defaultDescription, ATTR_last_empty_weight, device_id, MASS_KILOGRAMS))
+        sensors.append(EstymaNumber(defaultDescription, ATTR_last_empty_weight_offset, device_id, MASS_KILOGRAMS))
 
     return sensors
 
@@ -82,16 +90,13 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class EstymaNumber(NumberEntity):
 
-    def __init__(self, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
+    def __init__(self, description: NumberEntityDescription, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
         super().__init__()
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
+        self.entity_description = description
 
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
-
-        self._attr_mode = MODE_BOX
-        self._attr_native_max_value: 999999999
-        self._attr_native_min_value: 0
 
         self._state = None
         self._available = True
