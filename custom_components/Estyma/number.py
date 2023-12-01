@@ -87,6 +87,8 @@ class EstymaLastEmptyWeightNumber(NumberEntity):
 
         self._attr_native_unit_of_measurement = MASS_KILOGRAMS
         self._attr_mode = MODE_BOX
+        self._attr_max_value: 999999999
+        self._attr_min_value: 0
 
         self._state = None
         self._available = True
