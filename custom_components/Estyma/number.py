@@ -11,6 +11,7 @@ import voluptuous as vol
 from homeassistant.components.number import PLATFORM_SCHEMA, NumberEntity, NumberEntityDescription, RestoreNumber
 from homeassistant.components.number.const import MODE_BOX
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 import homeassistant.helpers.config_validation as cv
