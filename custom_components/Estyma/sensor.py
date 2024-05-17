@@ -25,11 +25,9 @@ from homeassistant.const import (
     CONF_PASSWORD,
     CONF_DEVICE_ID,
     PERCENTAGE,
-    TEMP_CELSIUS,
-    MASS_KILOGRAMS,
-    ENERGY_KILO_WATT_HOUR,
-    ENERGY_MEGA_WATT_HOUR,
-    ENERGY_WATT_HOUR
+    UnitOfTemperature,
+    UnitOfMass,
+    UnitOfEnergy
 )
 
 from .const import *
@@ -61,52 +59,52 @@ async def setup(Api: EstymaApi):
     sensors = []
     #ToDo cleanup
     for device_id in list(Api.devices.keys()):
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_total_current_sub1, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaSensor(Api, ATTR_consumption_fuel_current_day, device_id, MASS_KILOGRAMS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_return_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit2_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit3_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_heating_curcuit4_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_power_output_boiler_sub1, device_id, PERCENTAGE))
-        sensors.append(EstymaSensor(Api, ATTR_lamda_pwm_sub1, device_id, PERCENTAGE))
-        sensors.append(EstymaSensor(Api, ATTR_temp_lamda_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_obli_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_exhaust_boiler_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_oxygen_content_exhaust_sub1, device_id, PERCENTAGE))
-        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_fuel_fill_level_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_outside_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_energy_meter_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_obw1_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_number_obw_heating_curcuit_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_number_obw_cwu_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_number_buffers_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_status_solar_connected_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_state_lamda_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_temp_boiler_target_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_operation_mode_boiler_sub1, device_id))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_comf_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_room_eco_heating_curcuit_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_top_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub1, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub3, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_target_temp_buffer_bottom_sub4, device_id, TEMP_CELSIUS))
-        sensors.append(EstymaSensor(Api, ATTR_current_status_burner_sub1_int, device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_consumption_fuel_total_current_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfMass.KILOGRAMS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_consumption_fuel_current_day, Device_Id=device_id, native_unit_of_measurement=UnitOfMass.KILOGRAMS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_return_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_heating_curcuit1_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_heating_curcuit2_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_heating_curcuit3_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_heating_curcuit4_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_power_output_boiler_sub1, Device_Id=device_id, native_unit_of_measurement=PERCENTAGE, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_lamda_pwm_sub1, Device_Id=device_id, native_unit_of_measurement=PERCENTAGE, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_lamda_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_obli_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_exhaust_boiler_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_oxygen_content_exhaust_sub1, Device_Id=device_id, native_unit_of_measurement=PERCENTAGE, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_current_status_burner_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_fuel_fill_level_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_outside_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_energy_meter_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_obw1_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_buffer_top_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_buffer_bottom_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS, state_class=SensorStateClass.MEASUREMENT))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_number_obw_heating_curcuit_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_number_obw_cwu_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_number_buffers_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_status_solar_connected_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_state_lamda_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_target_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_target_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_temp_boiler_target_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_operation_mode_boiler_sub1, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_top_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_top_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_top_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_current_status_burner_sub1_int, Device_Id=device_id))
 
-        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL_INCREASING))
-        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, device_id, ENERGY_KILO_WATT_HOUR, SensorStateClass.TOTAL))
+        sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR, state_class=SensorStateClass.TOTAL_INCREASING))
+        sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, Device_Id=device_id, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR, state_class=SensorStateClass.TOTAL))
 
     return sensors
 
@@ -125,7 +123,7 @@ async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, asyn
 
 class EstymaSensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id, native_unit_of_measurement = None, state_class = None) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
@@ -133,6 +131,9 @@ class EstymaSensor(SensorEntity):
         
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
+
+        if(state_class != None):
+            self._attr_state_class = state_class
 
         self._state = None
         self._available = True
@@ -159,6 +160,10 @@ class EstymaSensor(SensorEntity):
     @property
     def state(self) -> Optional[str]:
         return self._state
+    
+    @property
+    def state_class(self):
+        return self._attr_state_class
 
     @property
     def device_info(self):
@@ -187,7 +192,7 @@ class EstymaSensor(SensorEntity):
 
 class EstymaEnergySensor(SensorEntity):
 
-    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id, native_unit_of_measurement = ENERGY_KILO_WATT_HOUR, state_class = SensorStateClass.TOTAL) -> None:
+    def __init__(self, estymaapi: EstymaApi, deviceAttribute, deviceReferenceAttribute, Device_Id,  native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR, state_class = SensorStateClass.TOTAL) -> None:
         super().__init__()
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
@@ -198,7 +203,7 @@ class EstymaEnergySensor(SensorEntity):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
             self._attr_native_unit_of_measurement
 
-        if(native_unit_of_measurement == ENERGY_KILO_WATT_HOUR or native_unit_of_measurement == ENERGY_MEGA_WATT_HOUR or native_unit_of_measurement == ENERGY_WATT_HOUR) :
+        if(native_unit_of_measurement == UnitOfEnergy.KILO_WATT_HOUR or native_unit_of_measurement == UnitOfEnergy.MEGA_WATT_HOUR or native_unit_of_measurement == UnitOfEnergy.WATT_HOUR) :
             self._attr_device_class = SensorDeviceClass.ENERGY
 
         self._attr_state_class = state_class
