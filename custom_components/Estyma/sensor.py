@@ -101,7 +101,7 @@ async def setup(Api: EstymaApi):
         sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
         sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub3, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
         sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_target_temp_buffer_bottom_sub4, Device_Id=device_id, native_unit_of_measurement=UnitOfTemperature.CELSIUS))
-        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_current_status_burner_sub1_int, Device_Id=device_id))
+        sensors.append(EstymaSensor(estymaapi=Api, deviceAttribute=ATTR_current_status_burner_sub1_int, Device_Id=device_id, state_class=SensorStateClass.MEASUREMENT))
 
         sensors.append(EstymaEnergySensor(Api, ATTR_total_energy, ATTR_consumption_fuel_total_current_sub1, Device_Id=device_id, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR, state_class=SensorStateClass.TOTAL_INCREASING))
         sensors.append(EstymaEnergySensor(Api, ATTR_daily_energy, ATTR_consumption_fuel_current_day, Device_Id=device_id, native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR, state_class=SensorStateClass.TOTAL))
@@ -132,6 +132,14 @@ class EstymaSensor(SensorEntity):
         if(native_unit_of_measurement != None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
 
+            match native_unit_of_measurement:
+                case UnitOfTemperature.CELSIUS: 
+                    self._icon = "mdi:thermometer"
+                case UnitOfMass.KILOGRAMS:
+                    self._icon = "mdi:weight"
+                case _:
+                    self._icon = "mdi:eye"
+
         if(state_class != None):
             self._attr_state_class = state_class
 
@@ -152,6 +160,10 @@ class EstymaSensor(SensorEntity):
     #@property
     #def displayname(self):
     #    return "text"
+
+    @property
+    def icon(self):
+        return self._icon
 
     @property
     def unique_id(self) -> str:
