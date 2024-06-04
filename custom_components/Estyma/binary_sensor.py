@@ -27,7 +27,15 @@ from homeassistant.const import (
     CONF_DEVICE_ID
 )
 
-from .const import *
+from .const import (
+    DOMAIN,
+    DEFAULT_NAME,
+    ATTR_burner_enabled_sub1,
+    ATTR_dataUpToDate,
+    ATTR_language,
+    ATTR_status_boiler_pump_sub1,
+    ATTR_status_pump_heating_curcuit1_sub1,
+)
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
@@ -46,9 +54,9 @@ async def setup(Api: EstymaApi):
 
     _LOGGER.debug("Setting up binary_sensors")
 
-    while(Api.initialized == False):
+    while(Api.initialized is not False):
         await Api.initialize(throw_Execetion= False)
-        if(Api.initialized == False):
+        if(Api.initialized is not False):
             break
         else:
             await asyncio.sleep(_failedInitSleepTime)
