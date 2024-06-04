@@ -597,7 +597,6 @@ class EstymaSensor(SensorEntity):
         except:
             _LOGGER.exception(traceback.print_exc())
 
-
 class EstymaEnergySensor(SensorEntity):
     def __init__(
         self,
