@@ -30,7 +30,56 @@ from homeassistant.const import (
     UnitOfEnergy
 )
 
-from .const import *
+from .const import (
+    DOMAIN,
+    DEFAULT_NAME,
+    ATTR_temp_boiler_return_sub1,
+    ATTR_target_temp_buffer_bottom_sub1,
+    ATTR_consumption_fuel_current_day,
+    ATTR_consumption_fuel_total_current_sub1,
+    ATTR_current_status_burner_sub1,
+    ATTR_current_status_burner_sub1_int,
+    ATTR_daily_energy,
+    ATTR_energy_meter_sub1,
+    ATTR_fuel_fill_level_sub1,
+    ATTR_lamda_pwm_sub1,
+    ATTR_language,
+    ATTR_number_buffers_sub1,
+    ATTR_number_obw_cwu_sub1,
+    ATTR_number_obw_heating_curcuit_sub1,
+    ATTR_operation_mode_boiler_sub1,
+    ATTR_oxygen_content_exhaust_sub1,
+    ATTR_power_output_boiler_sub1,
+    ATTR_state_lamda_sub1,
+    ATTR_status_solar_connected_sub1,
+    ATTR_target_temp_buffer_bottom_sub3,
+    ATTR_target_temp_buffer_bottom_sub4,
+    ATTR_target_temp_buffer_top_sub1,
+    ATTR_target_temp_buffer_top_sub3,
+    ATTR_target_temp_buffer_top_sub4,
+    ATTR_target_temp_obw1_sub1,
+    ATTR_target_temp_room_comf_heating_curcuit_sub1,
+    ATTR_target_temp_room_comf_heating_curcuit_sub3,
+    ATTR_target_temp_room_comf_heating_curcuit_sub4,
+    ATTR_target_temp_room_eco_heating_curcuit_sub1,
+    ATTR_target_temp_room_eco_heating_curcuit_sub3,
+    ATTR_target_temp_room_eco_heating_curcuit_sub4,
+    ATTR_temp_boiler_obli_sub1,
+    ATTR_temp_boiler_sub1,
+    ATTR_temp_boiler_target_sub1,
+    ATTR_temp_boiler_target_sub3,
+    ATTR_temp_boiler_target_sub4,
+    ATTR_temp_buffer_bottom_sub1,
+    ATTR_temp_buffer_top_sub1,
+    ATTR_temp_exhaust_boiler_sub1,
+    ATTR_temp_heating_curcuit1_sub1,
+    ATTR_temp_heating_curcuit2_sub1,
+    ATTR_temp_heating_curcuit3_sub1,
+    ATTR_temp_heating_curcuit4_sub1,
+    ATTR_temp_lamda_sub1,
+    ATTR_temp_outside_sub1,
+    ATTR_total_energy
+)
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
@@ -49,9 +98,9 @@ async def setup(Api: EstymaApi):
 
     _LOGGER.debug("Setting up sensors")
 
-    while(Api.initialized == False):
+    while(Api.initialized is False):
         await Api.initialize(throw_Execetion= False)
-        if(Api.initialized == False):
+        if(Api.initialized is False):
             break
         else:
             await asyncio.sleep(_failedInitSleepTime)
@@ -129,7 +178,7 @@ class EstymaSensor(SensorEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
         
-        if(native_unit_of_measurement != None):
+        if(native_unit_of_measurement is not None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
 
             match native_unit_of_measurement:
@@ -140,7 +189,7 @@ class EstymaSensor(SensorEntity):
                 case _:
                     self._icon = "mdi:eye"
 
-        if(state_class != None):
+        if(state_class is not None):
             self._attr_state_class = state_class
 
         self._state = None
@@ -211,7 +260,7 @@ class EstymaEnergySensor(SensorEntity):
         self._attributename = deviceAttribute
         self._deviceReferenceAttribute = f"sensor.{DOMAIN}_{Device_Id}_{deviceReferenceAttribute}"
         
-        if(native_unit_of_measurement != None):
+        if(native_unit_of_measurement is not None):
             self._attr_native_unit_of_measurement = native_unit_of_measurement
             self._attr_native_unit_of_measurement
 

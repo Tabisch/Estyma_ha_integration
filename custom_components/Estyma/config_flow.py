@@ -9,7 +9,7 @@ import homeassistant.helpers.config_validation as cv
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD
-    
+
 )
 
 from EstymaApiWrapper import EstymaApi
@@ -28,6 +28,9 @@ options_schema = vol.Schema(
 
 class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Estyma config flow."""
+
+    VERSION = 1
+    MINOR_VERSION = 1
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Handle user step."""
