@@ -26,7 +26,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
+from homeassistant.helpers.typing import ConfigType
 
 from .const import (
     DEFAULT_NAME,
@@ -523,6 +523,9 @@ class EstymaSensor(SensorEntity):
         self._estymaapi = estymaapi
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
+        self._attr_state_class = None
+
+        self._icon = "mdi:eye"
 
         if native_unit_of_measurement is not None:
             self._attr_native_unit_of_measurement = native_unit_of_measurement
@@ -532,8 +535,6 @@ class EstymaSensor(SensorEntity):
                     self._icon = "mdi:thermometer"
                 case UnitOfMass.KILOGRAMS:
                     self._icon = "mdi:weight"
-                case _:
-                    self._icon = "mdi:eye"
 
         if state_class is not None:
             self._attr_state_class = state_class
@@ -596,6 +597,7 @@ class EstymaSensor(SensorEntity):
             self._state = data[self._attributename]
         except:
             _LOGGER.exception(traceback.print_exc())
+
 
 class EstymaEnergySensor(SensorEntity):
     def __init__(
