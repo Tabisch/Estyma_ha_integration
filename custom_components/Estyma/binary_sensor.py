@@ -21,11 +21,7 @@ from homeassistant.helpers.typing import (
     HomeAssistantType,
 )
 
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_DEVICE_ID
-)
+from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_DEVICE_ID
 
 from .const import (
     DOMAIN,
@@ -46,46 +42,67 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(ATTR_language): cv.string
+        vol.Optional(ATTR_language): cv.string,
     }
 )
 
-async def setup(Api: EstymaApi):
 
+async def setup(Api: EstymaApi):
     _LOGGER.debug("Setting up binary_sensors")
 
-    while(Api.initialized is not False):
-        await Api.initialize(throw_Execetion= False)
-        if(Api.initialized is not False):
+    while Api.initialized is False:
+        await Api.initialize(throw_Execetion=False)
+        if Api.initialized is True:
             break
-        else:
-            await asyncio.sleep(_failedInitSleepTime)
+
+        await asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
-    #ToDo cleanup
+    # ToDo cleanup
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaBinarySensor(Api, ATTR_dataUpToDate, device_id))
         sensors.append(EstymaBinarySensor(Api, ATTR_burner_enabled_sub1, device_id))
-        sensors.append(EstymaBinarySensor(Api, ATTR_status_pump_heating_curcuit1_sub1, device_id))
+        sensors.append(
+            EstymaBinarySensor(Api, ATTR_status_pump_heating_curcuit1_sub1, device_id)
+        )
         sensors.append(EstymaBinarySensor(Api, ATTR_status_boiler_pump_sub1, device_id))
 
     return sensors
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
     config = hass.data[DOMAIN][entry.entry_id]
 
-    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
-    
-    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
+    _estymaApi = EstymaApi(
+        Email=config[CONF_EMAIL],
+        Password=config[CONF_PASSWORD],
+        scanInterval=0,
+        language=config[ATTR_language],
+    )
 
-async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
+    async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
+
+
+async def async_setup_platform(
+    hass: HomeAssistantType,
+    config: ConfigType,
+    async_add_entities: Callable,
+    discovery_info: Optional[DiscoveryInfoType] = None,
+) -> None:
     """Set up the sensor platform."""
-    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
-    
-    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
+    _estymaApi = EstymaApi(
+        Email=config[CONF_EMAIL],
+        Password=config[CONF_PASSWORD],
+        scanInterval=0,
+        language=config[ATTR_language],
+    )
+
+    async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
+
 
 class EstymaBinarySensor(BinarySensorEntity):
-
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
         self._estymaapi = estymaapi
@@ -98,7 +115,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
-            "last_update_diff": ""
+            "last_update_diff": "",
         }
 
     @property
@@ -106,8 +123,8 @@ class EstymaBinarySensor(BinarySensorEntity):
         return self._name
 
     # Todo automatic names
-    #@property
-    #def displayname(self):
+    # @property
+    # def displayname(self):
     #    return "text"
 
     @property
@@ -132,12 +149,14 @@ class EstymaBinarySensor(BinarySensorEntity):
     async def async_update(self):
         _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        #while(self._estymaapi.updatingData == True):
+        # while(self._estymaapi.updatingData == True):
         #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
         #    asyncio.sleep(1)
 
         try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
+            data = await self._estymaapi.getDeviceData(
+                self.attrs[CONF_DEVICE_ID], textToValues=True
+            )
 
             self._state = data[self._attributename]
         except:
