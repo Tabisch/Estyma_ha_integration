@@ -1,12 +1,11 @@
 {
+  "domain": "Estyma",
+  "name": "Estyma",
   "codeowners": ["@Tabisch"],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/Tabisch/Estyma_ha_integration",
-  "integration_type": "hub",
-  "domain": "Estyma",
+  "integration_type": "device",
   "iot_class": "cloud_polling",
-  "name": "Estyma",
-  "requirements": ["EstymaApiWrapper==0.0.65"],
-  "version": "1.0.5"
+  "requirements": ["EstymaApiWrapper==0.0.66"]
 }
