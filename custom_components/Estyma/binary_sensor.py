@@ -52,7 +52,7 @@ async def setup(Api: EstymaApi):
 
     while Api.initialized is False:
         await Api.initialize(throw_Execetion=False)
-        if Api.initialized is True:
+        if Api.initialized is False:
             break
 
         await asyncio.sleep(_failedInitSleepTime)
