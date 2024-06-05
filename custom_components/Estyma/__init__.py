@@ -1,11 +1,26 @@
 import logging
 from homeassistant import config_entries, core
-from .const import DOMAIN
+from .const import DOMAIN, ATTR_language
+import voluptuous as vol
+import homeassistant.helpers.config_validation as cv
+from homeassistant.components.sensor import PLATFORM_SCHEMA
 
+from homeassistant.const import (
+    CONF_EMAIL,
+    CONF_PASSWORD,
+)
 
 PLATFORMS = ["sensor", "binary_sensor", "switch"]
 
 _LOGGER = logging.getLogger(__name__)
+
+PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
+    {
+        vol.Required(CONF_EMAIL): cv.string,
+        vol.Required(CONF_PASSWORD): cv.string,
+        vol.Optional(ATTR_language): cv.string,
+    }
+)
 
 
 async def async_setup(hass, config):
