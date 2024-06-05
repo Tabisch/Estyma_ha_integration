@@ -14,9 +14,9 @@ _LOGGER = logging.getLogger(__name__)
 
 options_schema = vol.Schema(
     {
-        vol.Required(CONF_EMAIL): cv.string,
-        vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(ATTR_language): cv.string,
+        vol.Required(CONF_EMAIL): str,
+        vol.Required(CONF_PASSWORD): str,
+        vol.Required(ATTR_language): str,
     }
 )
 
@@ -30,13 +30,17 @@ class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Handle user step."""
 
-        errors: Dict[str, str] = {}
+        errors: dict[str, str] = {}
 
         if user_input is not None:
             # ToDo implement login validation
             try:
                 # await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
-                await (EstymaApi(Email=CONF_EMAIL, Password=CONF_PASSWORD))._login()
+                await (
+                    EstymaApi(
+                        Email=user_input[CONF_EMAIL], Password=user_input[CONF_PASSWORD]
+                    )
+                )._login()
             except ValueError:
                 errors["base"] = "auth"
 
