@@ -2,6 +2,7 @@ import logging
 from homeassistant import config_entries, core
 from .const import DOMAIN
 
+
 PLATFORMS = ["sensor", "binary_sensor", "switch"]
 
 _LOGGER = logging.getLogger(__name__)
