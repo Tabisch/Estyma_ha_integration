@@ -4,13 +4,15 @@
             "auth": "Email or Password is incorrect."
         },
         "step": {
-            "data": {
-                "Email": "Email Adresse",
-                "Password": "Password",
-                "language": "language (optional)"
-            },
-            "description": "Enter Username and Password",
-            "title": "Authentication"
+            "user": {
+                "data": {
+                    "email": "Email Adresse",
+                    "language": "Language",
+                    "password": "Password"
+                },
+                "description": "Enter Username and Password",
+                "title": "Authentication"
+            }
         }
     }
 }
