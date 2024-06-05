@@ -1,31 +1,27 @@
 import asyncio
-import logging
 from datetime import timedelta
+import logging
 import traceback
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from EstymaApiWrapper import EstymaApi
-
 import voluptuous as vol
 
-from homeassistant.components.binary_sensor import PLATFORM_SCHEMA
-from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.components.binary_sensor import PLATFORM_SCHEMA, BinarySensorEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_DEVICE_ID, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
     HomeAssistantType,
 )
 
-from homeassistant.const import CONF_EMAIL, CONF_PASSWORD, CONF_DEVICE_ID
-
 from .const import (
-    DOMAIN,
     DEFAULT_NAME,
+    DOMAIN,
     ATTR_burner_enabled_sub1,
     ATTR_dataUpToDate,
     ATTR_language,
@@ -112,7 +108,7 @@ class EstymaBinarySensor(BinarySensorEntity):
         self._state = None
         self._available = True
 
-        self.attrs: Dict[str, Any] = {
+        self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
             "last_update_diff": "",

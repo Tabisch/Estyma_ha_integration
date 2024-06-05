@@ -1,12 +1,11 @@
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from EstymaApiWrapper import EstymaApi
 import voluptuous as vol
 
 from homeassistant import config_entries
 from homeassistant.const import CONF_EMAIL, CONF_PASSWORD
-import homeassistant.helpers.config_validation as cv
 
 from .const import DOMAIN, ATTR_language
 
@@ -27,7 +26,7 @@ class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
     MINOR_VERSION = 1
 
-    async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
+    async def async_step_user(self, user_input: Optional[dict[str, Any]] = None):
         """Handle user step."""
 
         errors: dict[str, str] = {}
