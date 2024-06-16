@@ -33,14 +33,14 @@ class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             # ToDo implement login validation
-            try:
-                # await validate_auth(user_input[CONF_ACCESS_TOKEN], self.hass)
+            if (
                 await (
                     EstymaApi(
                         Email=user_input[CONF_EMAIL], Password=user_input[CONF_PASSWORD]
                     )
-                )._login()
-            except ValueError:
+                ).testCredentials()
+                is False
+            ):
                 errors["base"] = "auth"
 
             if not errors:
