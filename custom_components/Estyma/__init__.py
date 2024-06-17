@@ -4,13 +4,14 @@ from .const import DOMAIN, ATTR_language
 import voluptuous as vol
 import homeassistant.helpers.config_validation as cv
 from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.const import Platform
 
 from homeassistant.const import (
     CONF_EMAIL,
     CONF_PASSWORD,
 )
 
-PLATFORMS = ["sensor", "binary_sensor", "switch"]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH]
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -37,16 +38,8 @@ async def async_setup_entry(
     hass.data.setdefault(DOMAIN, {})
     hass.data[DOMAIN][entry.entry_id] = entry.data
 
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "binary_sensor")
-    )
-
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "sensor")
-    )
-
-    hass.async_create_task(
-        hass.config_entries.async_forward_entry_setup(entry, "switch")
+    await hass.config_entries.async_forward_entry_setups(
+        entry=entry, platforms=PLATFORMS
     )
 
     return True
