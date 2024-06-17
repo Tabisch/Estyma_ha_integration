@@ -13,13 +13,9 @@ from homeassistant.const import CONF_DEVICE_ID, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers.typing import (
-    ConfigType,
-    DiscoveryInfoType,
-    HomeAssistantType,
-)
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
-from .const import *
+from .const import DEFAULT_NAME, DOMAIN, ATTR_language, ATTR_status_controller_sub1
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
@@ -69,7 +65,7 @@ async def async_setup_entry(
 
 
 async def async_setup_platform(
-    hass: HomeAssistantType,
+    hass: HomeAssistant,
     config: ConfigType,
     async_add_entities: Callable,
     discovery_info: Optional[DiscoveryInfoType] = None,
@@ -95,7 +91,7 @@ class EstymaBinarySwitch(SwitchEntity):
         self._state = None
         self._available = True
 
-        self.attrs: Dict[str, Any] = {
+        self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
             "last_update_diff": "",
