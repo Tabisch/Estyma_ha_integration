@@ -7,8 +7,8 @@
             "user": {
                 "data": {
                     "email": "Email Adresse",
-                    "password": "Password",
-                    "language": "Language"
+                    "language": "Language",
+                    "password": "Password"
                 },
                 "description": "Enter Username and Password",
                 "title": "Authentication"

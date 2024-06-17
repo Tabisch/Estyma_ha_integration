@@ -1,33 +1,21 @@
 import asyncio
-import logging
 from datetime import timedelta
+import logging
 import traceback
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 from EstymaApiWrapper import EstymaApi
-
 import voluptuous as vol
 
-from homeassistant.components.switch import PLATFORM_SCHEMA
-from homeassistant.components.switch import SwitchEntity
+from homeassistant.components.switch import PLATFORM_SCHEMA, SwitchEntity
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_DEVICE_ID, CONF_EMAIL, CONF_PASSWORD
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
-
 import homeassistant.helpers.config_validation as cv
-from homeassistant.helpers.typing import (
-    ConfigType,
-    DiscoveryInfoType,
-    HomeAssistantType,
-)
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import ConfigType, DiscoveryInfoType
 
-from homeassistant.const import (
-    CONF_EMAIL,
-    CONF_PASSWORD,
-    CONF_DEVICE_ID
-)
-
-from .const import *
+from .const import DEFAULT_NAME, DOMAIN, ATTR_language, ATTR_status_controller_sub1
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
@@ -38,43 +26,62 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_EMAIL): cv.string,
         vol.Required(CONF_PASSWORD): cv.string,
-        vol.Optional(ATTR_language): cv.string
+        vol.Optional(ATTR_language): cv.string,
     }
 )
 
-async def setup(Api: EstymaApi):
 
+async def setup(Api: EstymaApi):
     _LOGGER.debug("Setting up switches")
 
-    while(Api.initialized == False):
-        await Api.initialize(throw_Execetion= False)
-        if(Api.initialized == False):
+    while Api.initialized is False:
+        await Api.initialize(throw_Execetion=False)
+        if Api.initialized is False:
             break
         else:
             await asyncio.sleep(_failedInitSleepTime)
 
     sensors = []
-    #ToDo cleanup
+    # ToDo cleanup
     for device_id in list(Api.devices.keys()):
         sensors.append(EstymaBinarySwitch(Api, ATTR_status_controller_sub1, device_id))
 
     return sensors
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback) -> None:
+
+async def async_setup_entry(
+    hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
+) -> None:
     config = hass.data[DOMAIN][entry.entry_id]
 
-    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
-    
-    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
+    _estymaApi = EstymaApi(
+        Email=config[CONF_EMAIL],
+        Password=config[CONF_PASSWORD],
+        scanInterval=0,
+        language=config[ATTR_language],
+    )
 
-async def async_setup_platform(hass: HomeAssistantType, config: ConfigType, async_add_entities: Callable, discovery_info: Optional[DiscoveryInfoType] = None,) -> None:
+    async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
+
+
+async def async_setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: Callable,
+    discovery_info: Optional[DiscoveryInfoType] = None,
+) -> None:
     """Set up the sensor platform."""
-    _estymaApi = EstymaApi(Email= config[CONF_EMAIL], Password= config[CONF_PASSWORD], scanInterval= 0, language= config[ATTR_language])
-    
-    async_add_entities(await setup(Api= _estymaApi), update_before_add=True)
+    _estymaApi = EstymaApi(
+        Email=config[CONF_EMAIL],
+        Password=config[CONF_PASSWORD],
+        scanInterval=0,
+        language=config[ATTR_language],
+    )
+
+    async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
+
 
 class EstymaBinarySwitch(SwitchEntity):
-
     def __init__(self, estymaapi: EstymaApi, deviceAttribute, Device_Id) -> None:
         super().__init__()
         self._estymaapi = estymaapi
@@ -84,10 +91,10 @@ class EstymaBinarySwitch(SwitchEntity):
         self._state = None
         self._available = True
 
-        self.attrs: Dict[str, Any] = {
+        self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
-            "last_update_diff": ""
+            "last_update_diff": "",
         }
 
         _LOGGER.debug(f"Setup complete {self._name} - {self.attrs[CONF_DEVICE_ID]}")
@@ -97,8 +104,8 @@ class EstymaBinarySwitch(SwitchEntity):
         return self._name
 
     # Todo automatic names
-    #@property
-    #def displayname(self):
+    # @property
+    # def displayname(self):
     #    return "text"
 
     @property
@@ -119,28 +126,40 @@ class EstymaBinarySwitch(SwitchEntity):
             "name": f"{DEFAULT_NAME}_{self.attrs[CONF_DEVICE_ID]}",
             "manufacturer": DEFAULT_NAME,
         }
-    
+
     async def async_turn_on(self):
         """Turn the entity on."""
-        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
-            _LOGGER.debug(f"turning on disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+        if await self._estymaapi.isUpdating(
+            self.attrs[CONF_DEVICE_ID], self._attributename
+        ):
+            _LOGGER.debug(
+                f"turning on disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}"
+            )
             return
         else:
             _LOGGER.debug(f"turning on {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 1)
+        await self._estymaapi.changeSetting(
+            self.attrs[CONF_DEVICE_ID], self._attributename, 1
+        )
 
         self._state = True
-    
+
     async def async_turn_off(self):
         """Turn the entity off."""
-        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
-            _LOGGER.debug(f"turning off disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+        if await self._estymaapi.isUpdating(
+            self.attrs[CONF_DEVICE_ID], self._attributename
+        ):
+            _LOGGER.debug(
+                f"turning off disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}"
+            )
             return
         else:
             _LOGGER.debug(f"turning off {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-        
-        await self._estymaapi.changeSetting(self.attrs[CONF_DEVICE_ID], self._attributename, 0)
+
+        await self._estymaapi.changeSetting(
+            self.attrs[CONF_DEVICE_ID], self._attributename, 0
+        )
 
         self._state = False
 
@@ -157,18 +176,30 @@ class EstymaBinarySwitch(SwitchEntity):
     async def async_update(self):
         _LOGGER.debug(f"update started {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        if await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename):
-            _LOGGER.debug(f"updating disabled - entity is updating  {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-            _LOGGER.debug(await self._estymaapi.isUpdating(self.attrs[CONF_DEVICE_ID], self._attributename))
+        if await self._estymaapi.isUpdating(
+            self.attrs[CONF_DEVICE_ID], self._attributename
+        ):
+            _LOGGER.debug(
+                f"updating disabled - entity is updating  {self._name} - {self.attrs[CONF_DEVICE_ID]}"
+            )
+            _LOGGER.debug(
+                await self._estymaapi.isUpdating(
+                    self.attrs[CONF_DEVICE_ID], self._attributename
+                )
+            )
             _LOGGER.debug(await self._estymaapi.getSettingChangeState())
             return
-        #else:
+        # else:
         #    _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
         try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID], textToValues=True)
+            data = await self._estymaapi.getDeviceData(
+                self.attrs[CONF_DEVICE_ID], textToValues=True
+            )
 
-            _LOGGER.debug(f"current state {self._attributename} {bool(data[self._attributename])}")
+            _LOGGER.debug(
+                f"current state {self._attributename} {bool(data[self._attributename])}"
+            )
 
             self._state = bool(data[self._attributename])
         except:

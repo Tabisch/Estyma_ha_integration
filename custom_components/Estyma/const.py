@@ -41,12 +41,24 @@ ATTR_burner_enabled_sub1 = "burner_enabled_sub1"
 ATTR_operation_mode_boiler_sub1 = "operation_mode_boiler_sub1"
 ATTR_status_controller_sub1 = "status_controller_sub1"
 ATTR_cwu_heat_now_sub1 = "cwu_heat_now_sub1"
-ATTR_target_temp_room_comf_heating_curcuit_sub1 = "target_temp_room_comf_heating_curcuit_sub1"
-ATTR_target_temp_room_comf_heating_curcuit_sub3 = "target_temp_room_comf_heating_curcuit_sub3"
-ATTR_target_temp_room_comf_heating_curcuit_sub4 = "target_temp_room_comf_heating_curcuit_sub4"
-ATTR_target_temp_room_eco_heating_curcuit_sub1 = "target_temp_room_eco_heating_curcuit_sub1"
-ATTR_target_temp_room_eco_heating_curcuit_sub3 = "target_temp_room_eco_heating_curcuit_sub3"
-ATTR_target_temp_room_eco_heating_curcuit_sub4 = "target_temp_room_eco_heating_curcuit_sub4"
+ATTR_target_temp_room_comf_heating_curcuit_sub1 = (
+    "target_temp_room_comf_heating_curcuit_sub1"
+)
+ATTR_target_temp_room_comf_heating_curcuit_sub3 = (
+    "target_temp_room_comf_heating_curcuit_sub3"
+)
+ATTR_target_temp_room_comf_heating_curcuit_sub4 = (
+    "target_temp_room_comf_heating_curcuit_sub4"
+)
+ATTR_target_temp_room_eco_heating_curcuit_sub1 = (
+    "target_temp_room_eco_heating_curcuit_sub1"
+)
+ATTR_target_temp_room_eco_heating_curcuit_sub3 = (
+    "target_temp_room_eco_heating_curcuit_sub3"
+)
+ATTR_target_temp_room_eco_heating_curcuit_sub4 = (
+    "target_temp_room_eco_heating_curcuit_sub4"
+)
 ATTR_heating_curcuit_prog_obw1_sub1 = "heating_curcuit_prog_obw1_sub1"
 ATTR_target_temp_buffer_top_sub1 = "target_temp_buffer_top_sub1"
 ATTR_target_temp_buffer_top_sub3 = "target_temp_buffer_top_sub3"

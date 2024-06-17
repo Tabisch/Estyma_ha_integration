@@ -1,11 +1,17 @@
 {
-  "codeowners": ["@Tabisch"],
+  "domain": "Estyma",
+  "name": "Estyma",
+  "codeowners": [
+    "@Tabisch"
+  ],
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/Tabisch/Estyma_ha_integration",
-  "domain": "Estyma",
+  "integration_type": "device",
   "iot_class": "cloud_polling",
-  "name": "Estyma",
-  "requirements": ["EstymaApiWrapper==0.0.65"],
-  "version": "1.0.5"
+  "requirements": [
+    "EstymaApiWrapper==0.0.67",
+    "beautifulsoup4==4.12.3"
+  ],
+  "version": "1.0.6"
 }

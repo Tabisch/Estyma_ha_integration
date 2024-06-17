@@ -4,3 +4,4 @@ Include/
 include/
 pyvenv.cfg
 venv/
+*.pyc
