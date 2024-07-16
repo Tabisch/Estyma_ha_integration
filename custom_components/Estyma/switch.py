@@ -82,7 +82,10 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-        self._state = None
+        self._state = bool(
+            self.coordinator.dataTextToValues[Device_Id][self._attributename]
+        )
+
         self._available = True
 
         self.attrs: dict[str, Any] = {
@@ -123,11 +126,9 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
 
     async def async_turn_on(self):
         """Turn the entity on."""
-        return
-
-        if await self._estymaapi.isUpdating(
-            self.attrs[CONF_DEVICE_ID], self._attributename
-        ):
+        if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
+            self._attributename
+        ]:
             _LOGGER.debug(
                 f"turning on disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}"
             )
@@ -135,19 +136,19 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
         else:
             _LOGGER.debug(f"turning on {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        await self._estymaapi.changeSetting(
+        await self.coordinator.api.changeSetting(
             self.attrs[CONF_DEVICE_ID], self._attributename, 1
         )
 
         self._state = True
 
+        self.async_write_ha_state()
+
     async def async_turn_off(self):
         """Turn the entity off."""
-        return
-
-        if await self._estymaapi.isUpdating(
-            self.attrs[CONF_DEVICE_ID], self._attributename
-        ):
+        if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
+            self._attributename
+        ]:
             _LOGGER.debug(
                 f"turning off disabled - entity is updating {self._name} - {self.attrs[CONF_DEVICE_ID]}"
             )
@@ -155,11 +156,13 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
         else:
             _LOGGER.debug(f"turning off {self._name} - {self.attrs[CONF_DEVICE_ID]}")
 
-        await self._estymaapi.changeSetting(
+        await self.coordinator.api.changeSetting(
             self.attrs[CONF_DEVICE_ID], self._attributename, 0
         )
 
         self._state = False
+
+        self.async_write_ha_state()
 
     async def async_toggle(self):
         """Toggle the entity."""
@@ -172,17 +175,17 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        _LOGGER.debug(
-            f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
-                    self._attributename
-                ]}"
-        )
-
-        if not self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
+        if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
             self._attributename
         ]:
             _LOGGER.debug(
-                f"entity is updating - {self._name} - {self.attrs[CONF_DEVICE_ID]}"
+                f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - updating is disabled"
+            )
+        else:
+            _LOGGER.debug(
+                f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+                    self._attributename
+                ]}"
             )
 
             self._state = bool(
