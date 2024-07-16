@@ -10,7 +10,7 @@
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "requirements": [
-    "EstymaApiWrapper==0.0.68",
+    "EstymaApiWrapper==0.0.69",
     "beautifulsoup4==4.12.3"
   ],
   "version": "1.0.6"
