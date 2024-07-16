@@ -15,7 +15,7 @@ from homeassistant.const import (
     CONF_PASSWORD,
 )
 
-PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR]  # , Platform.SWITCH]
+PLATFORMS = [Platform.SENSOR, Platform.BINARY_SENSOR, Platform.SWITCH]
 
 _LOGGER = logging.getLogger(__name__)
 _failedInitSleepTime = 5
