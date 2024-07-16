@@ -1,3 +1,8 @@
 "mounts": [
     "source=/home/tobias/Dokumente/GitHub/Estyma_ha_integration/custom_components/Estyma,target=/workspaces/home-assistant-core/config/custom_components/Estyma,type=bind,consistency=cached"
   ],
+
+
+// start of script/setup
+git config --global --add safe.directory /workspaces/home-assistant-core
+chmod -R 777 /workspaces/home-assistant-core
