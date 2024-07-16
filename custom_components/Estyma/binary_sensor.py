@@ -111,7 +111,7 @@ class EstymaBinarySensor(BinarySensorEntity, CoordinatorEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
-        self._state = None
+        self._state = self.coordinator.dataTextToValues[Device_Id][self._attributename]
         self._available = True
 
         self.attrs: dict[str, Any] = {

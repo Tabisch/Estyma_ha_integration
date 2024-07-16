@@ -528,7 +528,7 @@ class EstymaSensor(SensorEntity, CoordinatorEntity):
         if state_class is not None:
             self._attr_state_class = state_class
 
-        self._state = None
+        self._state = self.coordinator.data[Device_Id][self._attributename]
         self._available = True
 
         self.attrs: Dict[str, Any] = {
