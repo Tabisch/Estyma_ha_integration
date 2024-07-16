@@ -452,26 +452,26 @@ async def setup(coordinator: CoordinatorEntity):
             )
         )
 
-        # sensors.append(
-        #    EstymaEnergySensor(
-        #        Api,
-        #        ATTR_total_energy,
-        #        ATTR_consumption_fuel_total_current_sub1,
-        #        Device_Id=device_id,
-        #        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        #        state_class=SensorStateClass.TOTAL_INCREASING,
-        #    )
-        # )
-        # sensors.append(
-        #    EstymaEnergySensor(
-        #        Api,
-        #        ATTR_daily_energy,
-        #        ATTR_consumption_fuel_current_day,
-        #        Device_Id=device_id,
-        #        native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
-        #        state_class=SensorStateClass.TOTAL,
-        #    )
-        # )
+        sensors.append(
+            EstymaEnergySensor(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_total_energy,
+                deviceReferenceAttribute=ATTR_consumption_fuel_total_current_sub1,
+                Device_Id=device_id,
+                native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+                state_class=SensorStateClass.TOTAL_INCREASING,
+            )
+        )
+        sensors.append(
+            EstymaEnergySensor(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_daily_energy,
+                deviceReferenceAttribute=ATTR_consumption_fuel_current_day,
+                Device_Id=device_id,
+                native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
+                state_class=SensorStateClass.TOTAL,
+            )
+        )
 
     return sensors
 
@@ -599,7 +599,8 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
         super().__init__(coordinator=coordinator)
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
-        self._deviceReferenceAttribute = (
+        self._deviceReferenceAttribute = deviceReferenceAttribute
+        self._deviceReferenceSensor = (
             f"sensor.{DOMAIN}_{Device_Id}_{deviceReferenceAttribute}"
         )
 
@@ -616,12 +617,14 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
 
         self._attr_state_class = state_class
 
-        self._state = None
+        self._state = float(
+            self.coordinator.data[Device_Id][self._deviceReferenceAttribute] * 4.8
+        )
         self._available = True
 
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
-            "deviceReferenceAttribute": self._deviceReferenceAttribute,
+            "deviceReferenceSensor": self._deviceReferenceSensor,
         }
 
     @property
@@ -664,14 +667,17 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
             "manufacturer": DEFAULT_NAME,
         }
 
-    async def async_update(self):
-        _deviceReferenceAttributeValue = self.hass.states.get(
-            self._deviceReferenceAttribute
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        _LOGGER.debug(
+            f"EstymaSensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._deviceReferenceAttribute]}"
         )
-        _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute}")
 
-        if _deviceReferenceAttributeValue:
-            _LOGGER.debug(
-                f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue.state}"
-            )
-            self._state = float(_deviceReferenceAttributeValue.state) * 4.8
+        self._state = float(
+            self.coordinator.data[self.attrs[CONF_DEVICE_ID]][
+                self._deviceReferenceAttribute
+            ]
+            * 4.8
+        )
+
+        self.async_write_ha_state()
