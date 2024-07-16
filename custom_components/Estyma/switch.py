@@ -35,10 +35,10 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 async def setup(coordinator: CoordinatorEntity):
     _LOGGER.debug(f"Setting up switches - Devices: {coordinator.data.keys()}")
 
-    sensors = []
+    switches = []
     # ToDo cleanup
     for device_id in list(coordinator.data.keys()):
-        sensors.append(
+        switches.append(
             EstymaBinarySwitch(
                 coordinator=coordinator,
                 deviceAttribute=ATTR_status_controller_sub1,
@@ -46,7 +46,7 @@ async def setup(coordinator: CoordinatorEntity):
             )
         )
 
-    return sensors
+    return switches
 
 
 async def async_setup_entry(
