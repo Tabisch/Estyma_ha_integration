@@ -37,11 +37,15 @@ class EstymaCoordinator(DataUpdateCoordinator):
         self.api = estymaApi
         self.dataTextToValues = None
         self.UpdatingSettingTable = None
+        self.availableSettings = None
 
     async def _async_update_data(self):
         _LOGGER.debug("EstymaCoordinator updating")
 
         self.dataTextToValues = await self.api.getDeviceData(textToValues=True)
         self.UpdatingSettingTable = await self.api.getUpdatingSettingTable()
+
+        if self.availableSettings is None:
+            self.availableSettings = await self.api.getAvailableSettings()
 
         return await self.api.getDeviceData()
