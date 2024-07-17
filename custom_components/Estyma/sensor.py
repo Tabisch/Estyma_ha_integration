@@ -66,7 +66,7 @@ from .const import (
     ATTR_temp_boiler_obli_sub1,
     ATTR_temp_boiler_return_sub1,
     ATTR_temp_boiler_sub1,
-    ATTR_temp_boiler_target_sub1,
+    # ATTR_temp_boiler_target_sub1,
     ATTR_temp_boiler_target_sub3,
     ATTR_temp_boiler_target_sub4,
     ATTR_temp_buffer_bottom_sub1,
@@ -319,14 +319,6 @@ async def setup(coordinator: CoordinatorEntity):
         sensors.append(
             EstymaSensor(
                 coordinator=coordinator,
-                deviceAttribute=ATTR_temp_boiler_target_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_target_sub3,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -336,21 +328,6 @@ async def setup(coordinator: CoordinatorEntity):
             EstymaSensor(
                 coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_target_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_operation_mode_boiler_sub1,
-                Device_Id=device_id,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
             )
@@ -374,14 +351,6 @@ async def setup(coordinator: CoordinatorEntity):
         sensors.append(
             EstymaSensor(
                 coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub3,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -398,14 +367,6 @@ async def setup(coordinator: CoordinatorEntity):
         sensors.append(
             EstymaSensor(
                 coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_buffer_top_sub3,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -415,14 +376,6 @@ async def setup(coordinator: CoordinatorEntity):
             EstymaSensor(
                 coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_buffer_top_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
             )
