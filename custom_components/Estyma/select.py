@@ -22,11 +22,20 @@ from .const import (
     ATTR_language,
     ATTR_temp_boiler_target_sub1,
     ATTR_operation_mode_boiler_sub1,
-    ATTR_target_temp_buffer_top_sub1,
-    ATTR_target_temp_buffer_bottom_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub1,
-    ATTR_target_temp_room_eco_heating_curcuit_sub1,
     ATTR_heating_curcuit_prog_obw1_sub1,
+    ATTR_target_temp_buffer_bottom_sub1,
+    ATTR_target_temp_buffer_bottom_sub3,
+    ATTR_target_temp_buffer_bottom_sub4,
+    ATTR_target_temp_buffer_top_sub1,
+    ATTR_target_temp_buffer_top_sub3,
+    ATTR_target_temp_buffer_top_sub4,
+    ATTR_target_temp_room_comf_heating_curcuit_sub1,
+    ATTR_target_temp_room_comf_heating_curcuit_sub3,
+    ATTR_target_temp_room_comf_heating_curcuit_sub4,
+    ATTR_target_temp_room_eco_heating_curcuit_sub1,
+    ATTR_target_temp_room_eco_heating_curcuit_sub3,
+    ATTR_target_temp_room_eco_heating_curcuit_sub4,
+    ATTR_number_obw_heating_curcuit_sub1,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -73,7 +82,35 @@ async def setup(coordinator: CoordinatorEntity):
         sensors.append(
             EstymaSelectEntity(
                 coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_buffer_top_sub3,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_buffer_top_sub4,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_buffer_bottom_sub1,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_buffer_bottom_sub3,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_buffer_bottom_sub4,
                 Device_Id=device_id,
             )
         )
@@ -87,7 +124,35 @@ async def setup(coordinator: CoordinatorEntity):
         sensors.append(
             EstymaSelectEntity(
                 coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub3,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub4,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub1,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub3,
+                Device_Id=device_id,
+            )
+        )
+        sensors.append(
+            EstymaSelectEntity(
+                coordinator=coordinator,
+                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub4,
                 Device_Id=device_id,
             )
         )
@@ -135,6 +200,22 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
+        self.attrs: dict[str, Any] = {
+            CONF_DEVICE_ID: Device_Id,
+            "last_update": "",
+            "last_update_diff": "",
+        }
+
+        self._active = True
+
+        if self._attributename not in list(
+            self.coordinator.availableSettings[Device_Id].keys()
+        ):
+            self._active = False
+            self._attr_current_option = ""
+            self._attr_options = list()
+            return
+
         self._optionDisplayToRealValueTable = {}
 
         _optionsList = list()
@@ -160,13 +241,6 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
             self.coordinator.data[Device_Id][self._attributename]
         )
         self._attr_options = _optionsList
-        self._available = True
-
-        self.attrs: dict[str, Any] = {
-            CONF_DEVICE_ID: Device_Id,
-            "last_update": "",
-            "last_update_diff": "",
-        }
 
     @property
     def name(self) -> str:
@@ -176,6 +250,18 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
     # @property
     # def displayname(self):
     #    return "text"
+
+    @property
+    def available(self) -> bool:
+        return self._active
+
+    @property
+    def entity_registry_enabled_default(self) -> bool:
+        return self._active
+
+    @property
+    def entity_registry_visible_default(self) -> bool:
+        return self._active
 
     @property
     def unique_id(self) -> str:
@@ -218,6 +304,12 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
+        if self._active is False:
+            _LOGGER.debug(
+                f"EstymaSelectEntity - {self._name} - {self.attrs[CONF_DEVICE_ID]} - is inactive"
+            )
+            return
+
         if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
             self._attributename
         ]:

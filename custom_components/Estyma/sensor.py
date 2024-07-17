@@ -45,28 +45,14 @@ from .const import (
     ATTR_number_buffers_sub1,
     ATTR_number_obw_cwu_sub1,
     ATTR_number_obw_heating_curcuit_sub1,
-    ATTR_operation_mode_boiler_sub1,
     ATTR_oxygen_content_exhaust_sub1,
     ATTR_power_output_boiler_sub1,
     ATTR_state_lamda_sub1,
     ATTR_status_solar_connected_sub1,
-    ATTR_target_temp_buffer_bottom_sub1,
-    ATTR_target_temp_buffer_bottom_sub3,
-    ATTR_target_temp_buffer_bottom_sub4,
-    ATTR_target_temp_buffer_top_sub1,
-    ATTR_target_temp_buffer_top_sub3,
-    ATTR_target_temp_buffer_top_sub4,
     ATTR_target_temp_obw1_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub3,
-    ATTR_target_temp_room_comf_heating_curcuit_sub4,
-    ATTR_target_temp_room_eco_heating_curcuit_sub1,
-    ATTR_target_temp_room_eco_heating_curcuit_sub3,
-    ATTR_target_temp_room_eco_heating_curcuit_sub4,
     ATTR_temp_boiler_obli_sub1,
     ATTR_temp_boiler_return_sub1,
     ATTR_temp_boiler_sub1,
-    # ATTR_temp_boiler_target_sub1,
     ATTR_temp_boiler_target_sub3,
     ATTR_temp_boiler_target_sub4,
     ATTR_temp_buffer_bottom_sub1,
@@ -84,7 +70,6 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
-_failedInitSleepTime = 5
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -328,70 +313,6 @@ async def setup(coordinator: CoordinatorEntity):
             EstymaSensor(
                 coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_target_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                coordinator=coordinator,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub4,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
             )
