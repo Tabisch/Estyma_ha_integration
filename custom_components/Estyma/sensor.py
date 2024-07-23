@@ -1,4 +1,5 @@
 import asyncio
+import json
 from datetime import datetime, timedelta
 import logging
 import traceback
@@ -23,10 +24,11 @@ from homeassistant.const import (
     UnitOfMass,
     UnitOfTemperature,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
     DEFAULT_NAME,
@@ -43,28 +45,14 @@ from .const import (
     ATTR_number_buffers_sub1,
     ATTR_number_obw_cwu_sub1,
     ATTR_number_obw_heating_curcuit_sub1,
-    ATTR_operation_mode_boiler_sub1,
     ATTR_oxygen_content_exhaust_sub1,
     ATTR_power_output_boiler_sub1,
     ATTR_state_lamda_sub1,
     ATTR_status_solar_connected_sub1,
-    ATTR_target_temp_buffer_bottom_sub1,
-    ATTR_target_temp_buffer_bottom_sub3,
-    ATTR_target_temp_buffer_bottom_sub4,
-    ATTR_target_temp_buffer_top_sub1,
-    ATTR_target_temp_buffer_top_sub3,
-    ATTR_target_temp_buffer_top_sub4,
     ATTR_target_temp_obw1_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub1,
-    ATTR_target_temp_room_comf_heating_curcuit_sub3,
-    ATTR_target_temp_room_comf_heating_curcuit_sub4,
-    ATTR_target_temp_room_eco_heating_curcuit_sub1,
-    ATTR_target_temp_room_eco_heating_curcuit_sub3,
-    ATTR_target_temp_room_eco_heating_curcuit_sub4,
     ATTR_temp_boiler_obli_sub1,
     ATTR_temp_boiler_return_sub1,
     ATTR_temp_boiler_sub1,
-    ATTR_temp_boiler_target_sub1,
     ATTR_temp_boiler_target_sub3,
     ATTR_temp_boiler_target_sub4,
     ATTR_temp_buffer_bottom_sub1,
@@ -82,7 +70,6 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from GitHub
 SCAN_INTERVAL = timedelta(seconds=30)
-_failedInitSleepTime = 5
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -93,22 +80,15 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 )
 
 
-async def setup(Api: EstymaApi):
-    _LOGGER.debug("Setting up sensors")
-
-    while Api.initialized is False:
-        await Api.initialize(throw_Execetion=False)
-        if Api.initialized is False:
-            break
-        else:
-            await asyncio.sleep(_failedInitSleepTime)
+async def setup(coordinator: CoordinatorEntity):
+    _LOGGER.debug(f"Setting up sensors - Devices: {coordinator.data.keys()}")
 
     sensors = []
     # ToDo cleanup
-    for device_id in list(Api.devices.keys()):
+    for device_id in list(coordinator.data.keys()):
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_consumption_fuel_total_current_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfMass.KILOGRAMS,
@@ -117,7 +97,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_consumption_fuel_current_day,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfMass.KILOGRAMS,
@@ -126,7 +106,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_return_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -135,7 +115,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_heating_curcuit1_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -144,7 +124,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_heating_curcuit2_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -153,7 +133,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_heating_curcuit3_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -162,7 +142,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_heating_curcuit4_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -171,7 +151,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_power_output_boiler_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=PERCENTAGE,
@@ -180,7 +160,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_lamda_pwm_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=PERCENTAGE,
@@ -189,12 +169,14 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api, deviceAttribute=ATTR_temp_lamda_sub1, Device_Id=device_id
+                coordinator=coordinator,
+                deviceAttribute=ATTR_temp_lamda_sub1,
+                Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -203,7 +185,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_obli_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -212,7 +194,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_exhaust_boiler_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -221,7 +203,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_oxygen_content_exhaust_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=PERCENTAGE,
@@ -230,21 +212,21 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_current_status_burner_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_fuel_fill_level_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_outside_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -253,14 +235,14 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_energy_meter_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_target_temp_obw1_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -268,7 +250,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_buffer_top_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -277,7 +259,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_buffer_bottom_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -286,50 +268,42 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_number_obw_heating_curcuit_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_number_obw_cwu_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_number_buffers_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_status_solar_connected_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_state_lamda_sub1,
                 Device_Id=device_id,
             )
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_temp_boiler_target_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_target_sub3,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -337,7 +311,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_temp_boiler_target_sub4,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfTemperature.CELSIUS,
@@ -345,110 +319,7 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_operation_mode_boiler_sub1,
-                Device_Id=device_id,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_comf_heating_curcuit_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_room_eco_heating_curcuit_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_top_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub1,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub3,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
-                deviceAttribute=ATTR_target_temp_buffer_bottom_sub4,
-                Device_Id=device_id,
-                native_unit_of_measurement=UnitOfTemperature.CELSIUS,
-            )
-        )
-        sensors.append(
-            EstymaSensor(
-                estymaapi=Api,
+                coordinator=coordinator,
                 deviceAttribute=ATTR_current_status_burner_sub1_int,
                 Device_Id=device_id,
                 state_class=SensorStateClass.MEASUREMENT,
@@ -457,9 +328,9 @@ async def setup(Api: EstymaApi):
 
         sensors.append(
             EstymaEnergySensor(
-                Api,
-                ATTR_total_energy,
-                ATTR_consumption_fuel_total_current_sub1,
+                coordinator=coordinator,
+                deviceAttribute=ATTR_total_energy,
+                deviceReferenceAttribute=ATTR_consumption_fuel_total_current_sub1,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                 state_class=SensorStateClass.TOTAL_INCREASING,
@@ -467,9 +338,9 @@ async def setup(Api: EstymaApi):
         )
         sensors.append(
             EstymaEnergySensor(
-                Api,
-                ATTR_daily_energy,
-                ATTR_consumption_fuel_current_day,
+                coordinator=coordinator,
+                deviceAttribute=ATTR_daily_energy,
+                deviceReferenceAttribute=ATTR_consumption_fuel_current_day,
                 Device_Id=device_id,
                 native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
                 state_class=SensorStateClass.TOTAL,
@@ -482,16 +353,9 @@ async def setup(Api: EstymaApi):
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
-    config = hass.data[DOMAIN][entry.entry_id]
+    coordinator = entry.runtime_data
 
-    _estymaApi = EstymaApi(
-        Email=config[CONF_EMAIL],
-        Password=config[CONF_PASSWORD],
-        scanInterval=0,
-        language=config[ATTR_language],
-    )
-
-    async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
+    async_add_entities(await setup(coordinator=coordinator), update_before_add=True)
 
 
 async def async_setup_platform(
@@ -510,17 +374,16 @@ async def async_setup_platform(
     async_add_entities(await setup(Api=_estymaApi), update_before_add=True)
 
 
-class EstymaSensor(SensorEntity):
+class EstymaSensor(SensorEntity, CoordinatorEntity):
     def __init__(
         self,
-        estymaapi: EstymaApi,
+        coordinator: CoordinatorEntity,
         deviceAttribute,
         Device_Id,
         native_unit_of_measurement=None,
         state_class=None,
     ) -> None:
-        super().__init__()
-        self._estymaapi = estymaapi
+        super().__init__(coordinator=coordinator)
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
         self._attr_state_class = None
@@ -539,7 +402,7 @@ class EstymaSensor(SensorEntity):
         if state_class is not None:
             self._attr_state_class = state_class
 
-        self._state = None
+        self._state = self.coordinator.data[Device_Id][self._attributename]
         self._available = True
 
         self.attrs: Dict[str, Any] = {
@@ -584,36 +447,34 @@ class EstymaSensor(SensorEntity):
             "manufacturer": DEFAULT_NAME,
         }
 
-    async def async_update(self):
-        _LOGGER.debug(f"updating {self._name} - {self.attrs[CONF_DEVICE_ID]}")
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        _LOGGER.debug(
+            f"EstymaSensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._attributename]}"
+        )
 
-        # while(self._estymaapi.updatingData == True):
-        #    _LOGGER.debug(f"waiting for update to finish {self._name} - {self.attrs[CONF_DEVICE_ID]}")
-        #    asyncio.sleep(1)
+        self._state = self.coordinator.data[self.attrs[CONF_DEVICE_ID]][
+            self._attributename
+        ]
 
-        try:
-            data = await self._estymaapi.getDeviceData(self.attrs[CONF_DEVICE_ID])
-
-            self._state = data[self._attributename]
-        except:
-            _LOGGER.exception(traceback.print_exc())
+        self.async_write_ha_state()
 
 
-class EstymaEnergySensor(SensorEntity):
+class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
     def __init__(
         self,
-        estymaapi: EstymaApi,
+        coordinator: CoordinatorEntity,
         deviceAttribute,
         deviceReferenceAttribute,
         Device_Id,
         native_unit_of_measurement=UnitOfEnergy.KILO_WATT_HOUR,
         state_class=SensorStateClass.TOTAL,
     ) -> None:
-        super().__init__()
-        self._estymaapi = estymaapi
+        super().__init__(coordinator=coordinator)
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
-        self._deviceReferenceAttribute = (
+        self._deviceReferenceAttribute = deviceReferenceAttribute
+        self._deviceReferenceSensor = (
             f"sensor.{DOMAIN}_{Device_Id}_{deviceReferenceAttribute}"
         )
 
@@ -630,12 +491,14 @@ class EstymaEnergySensor(SensorEntity):
 
         self._attr_state_class = state_class
 
-        self._state = None
+        self._state = float(
+            self.coordinator.data[Device_Id][self._deviceReferenceAttribute] * 4.8
+        )
         self._available = True
 
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
-            "deviceReferenceAttribute": self._deviceReferenceAttribute,
+            "deviceReferenceSensor": self._deviceReferenceSensor,
         }
 
     @property
@@ -678,14 +541,17 @@ class EstymaEnergySensor(SensorEntity):
             "manufacturer": DEFAULT_NAME,
         }
 
-    async def async_update(self):
-        _deviceReferenceAttributeValue = self.hass.states.get(
-            self._deviceReferenceAttribute
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        _LOGGER.debug(
+            f"EstymaSensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._deviceReferenceAttribute]}"
         )
-        _LOGGER.debug(f"{self._name} - {self._deviceReferenceAttribute}")
 
-        if _deviceReferenceAttributeValue:
-            _LOGGER.debug(
-                f"{self._name} - {self._deviceReferenceAttribute} - {_deviceReferenceAttributeValue.state}"
-            )
-            self._state = float(_deviceReferenceAttributeValue.state) * 4.8
+        self._state = float(
+            self.coordinator.data[self.attrs[CONF_DEVICE_ID]][
+                self._deviceReferenceAttribute
+            ]
+            * 4.8
+        )
+
+        self.async_write_ha_state()
