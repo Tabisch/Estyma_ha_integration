@@ -13,5 +13,5 @@
     "EstymaApiWrapper==0.0.69",
     "beautifulsoup4==4.12.3"
   ],
-  "version": "1.0.7"
+  "version": "1.0.8"
 }
