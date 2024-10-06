@@ -280,9 +280,7 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
-            self._attributename
-        ]:
+        if self._attributename in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys():
             _LOGGER.debug(
                 f"EstymaSelectEntity async_select_option - {self._name} - {self.attrs[CONF_DEVICE_ID]} - update disabled"
             )

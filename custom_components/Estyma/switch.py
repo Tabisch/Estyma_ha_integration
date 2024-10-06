@@ -175,9 +175,7 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        if self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]][
-            self._attributename
-        ]:
+        if self._attributename in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys():
             _LOGGER.debug(
                 f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - updating is disabled"
             )
