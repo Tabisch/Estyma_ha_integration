@@ -34,10 +34,10 @@ class EstymaCoordinator(DataUpdateCoordinator):
             always_update=True,
         )
 
-        self.api = estymaApi
-        self.dataTextToValues = None
-        self.UpdatingSettingTable = None
-        self.availableSettings = None
+        self.api: EstymaApi = estymaApi
+        self.dataTextToValues: dict = None
+        self.UpdatingSettingTable: dict = None
+        self.availableSettings: dict = None
 
     async def _async_update_data(self):
         _LOGGER.debug("EstymaCoordinator updating")
