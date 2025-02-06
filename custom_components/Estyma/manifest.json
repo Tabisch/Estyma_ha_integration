@@ -7,6 +7,7 @@
   "config_flow": true,
   "dependencies": [],
   "documentation": "https://github.com/Tabisch/Estyma_ha_integration",
+  "issue_tracker": "https://github.com/Tabisch/Estyma_ha_integration/issues",
   "integration_type": "device",
   "iot_class": "cloud_polling",
   "requirements": [
