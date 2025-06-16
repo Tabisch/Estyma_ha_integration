@@ -200,6 +200,8 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
         self._name = f"{DOMAIN}_{Device_Id}_{deviceAttribute}"
         self._attributename = deviceAttribute
 
+        self._available = False
+
         self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
             "last_update": "",
@@ -246,14 +248,14 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
     def name(self) -> str:
         return self._name
 
+    @property
+    def available(self) -> str:
+        return self._available and self._active
+
     # Todo automatic names
     # @property
     # def displayname(self):
     #    return "text"
-
-    @property
-    def available(self) -> bool:
-        return self._active
 
     @property
     def entity_registry_enabled_default(self) -> bool:
@@ -280,7 +282,10 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
 
     async def async_select_option(self, option: str) -> None:
         """Change the selected option."""
-        if self._attributename in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys():
+        if (
+            self._attributename
+            in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys()
+        ):
             _LOGGER.debug(
                 f"EstymaSelectEntity async_select_option - {self._name} - {self.attrs[CONF_DEVICE_ID]} - update disabled"
             )
@@ -316,13 +321,19 @@ class EstymaSelectEntity(SelectEntity, CoordinatorEntity):
             )
         else:
             _LOGGER.debug(
-                f"EstymaSelectEntity - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
-                    self._attributename
-                ]}"
+                f"EstymaSelectEntity - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {
+                    self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+                        self._attributename
+                    ]
+                }"
             )
 
             self._attr_current_option = str(
                 self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._attributename]
             )
 
-            self.async_write_ha_state()
+        self._available = self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+            "online"
+        ]["is_online"]
+
+        self.async_write_ha_state()
