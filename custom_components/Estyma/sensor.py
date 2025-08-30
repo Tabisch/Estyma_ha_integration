@@ -403,7 +403,7 @@ class EstymaSensor(SensorEntity, CoordinatorEntity):
             self._attr_state_class = state_class
 
         self._state = self.coordinator.data[Device_Id][self._attributename]
-        self._available = True
+        self._available = False
 
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
@@ -414,6 +414,10 @@ class EstymaSensor(SensorEntity, CoordinatorEntity):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def available(self) -> str:
+        return self._available
 
     # Todo automatic names
     # @property
@@ -452,6 +456,10 @@ class EstymaSensor(SensorEntity, CoordinatorEntity):
         _LOGGER.debug(
             f"EstymaSensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._attributename]}"
         )
+
+        self._available = self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+            "online"
+        ]["is_online"]
 
         self._state = self.coordinator.data[self.attrs[CONF_DEVICE_ID]][
             self._attributename
@@ -494,7 +502,7 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
         self._state = float(
             self.coordinator.data[Device_Id][self._deviceReferenceAttribute] * 4.8
         )
-        self._available = True
+        self._available = False
 
         self.attrs: Dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
@@ -504,6 +512,10 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def available(self) -> str:
+        return self._available
 
     # Todo automatic names
     # @property
@@ -546,6 +558,10 @@ class EstymaEnergySensor(SensorEntity, CoordinatorEntity):
         _LOGGER.debug(
             f"EstymaSensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._deviceReferenceAttribute]}"
         )
+
+        self._available = self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+            "online"
+        ]["is_online"]
 
         self._state = float(
             self.coordinator.data[self.attrs[CONF_DEVICE_ID]][

@@ -86,7 +86,7 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
             self.coordinator.dataTextToValues[Device_Id][self._attributename]
         )
 
-        self._available = True
+        self._available = False
 
         self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
@@ -99,6 +99,10 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def available(self) -> str:
+        return self._available
 
     # Todo automatic names
     # @property
@@ -175,15 +179,20 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        if self._attributename in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys():
+        if (
+            self._attributename
+            in self.coordinator.UpdatingSettingTable[self.attrs[CONF_DEVICE_ID]].keys()
+        ):
             _LOGGER.debug(
                 f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - updating is disabled"
             )
         else:
             _LOGGER.debug(
-                f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
-                    self._attributename
-                ]}"
+                f"EstymaBinarySwitch - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {
+                    self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+                        self._attributename
+                    ]
+                }"
             )
 
             self._state = bool(
@@ -192,4 +201,8 @@ class EstymaBinarySwitch(SwitchEntity, CoordinatorEntity):
                 ]
             )
 
-            self.async_write_ha_state()
+        self._available = self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
+            "online"
+        ]["is_online"]
+
+        self.async_write_ha_state()

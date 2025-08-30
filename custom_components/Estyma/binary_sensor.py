@@ -124,7 +124,10 @@ class EstymaBinarySensor(BinarySensorEntity, CoordinatorEntity):
         self._attributename = deviceAttribute
 
         self._state = self.coordinator.dataTextToValues[Device_Id][self._attributename]
-        self._available = True
+        self._available = False
+
+        if deviceAttribute == ATTR_dataUpToDate:
+            self._available = True
 
         self.attrs: dict[str, Any] = {
             CONF_DEVICE_ID: Device_Id,
@@ -135,6 +138,10 @@ class EstymaBinarySensor(BinarySensorEntity, CoordinatorEntity):
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def available(self) -> str:
+        return self._available
 
     # Todo automatic names
     # @property
@@ -165,6 +172,11 @@ class EstymaBinarySensor(BinarySensorEntity, CoordinatorEntity):
         _LOGGER.debug(
             f"EstymaBinarySensor - {self._name} - {self.attrs[CONF_DEVICE_ID]} - {self.coordinator.data[self.attrs[CONF_DEVICE_ID]][self._attributename]}"
         )
+
+        if self._attributename != ATTR_dataUpToDate:
+            self._available = self.coordinator.dataTextToValues[
+                self.attrs[CONF_DEVICE_ID]
+            ]["online"]["is_online"]
 
         self._state = self.coordinator.dataTextToValues[self.attrs[CONF_DEVICE_ID]][
             self._attributename
