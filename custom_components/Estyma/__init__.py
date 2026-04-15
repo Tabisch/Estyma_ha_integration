@@ -50,6 +50,7 @@ async def async_setup_entry(
         Password=config[CONF_PASSWORD],
         scanInterval=0,
         language=config[ATTR_language],
+        Domain="net.estyma.pl",
     )
 
     while _estymaApi.initialized is False:
