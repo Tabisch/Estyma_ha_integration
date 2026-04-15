@@ -36,7 +36,9 @@ class EstymaFlow(config_entries.ConfigFlow, domain=DOMAIN):
             if (
                 await (
                     EstymaApi(
-                        Email=user_input[CONF_EMAIL], Password=user_input[CONF_PASSWORD]
+                        Email=user_input[CONF_EMAIL],
+                        Password=user_input[CONF_PASSWORD],
+                        Domain="net.estyma.pl",
                     )
                 ).testCredentials()
                 is False
