@@ -1,3 +1,8 @@
+This project will be archived soon. \
+I am currently developing a local/proxy server. \
+That server should be faster and integrate better with home assistant. \
+https://github.com/Tabisch/estyma-local
+
 # Estyma for Home Assistant
 
 Integrate your heating system into Home Assistant \
